@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  /* iOS Typography */
+  --font-sans: -apple-system, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+  
+  /* iOS Colors - Light */
+  --color-ios-blue: #007AFF;
+  --color-ios-green: #34C759;
+  --color-ios-red: #FF3B30;
+  --color-ios-orange: #FF9500;
+  --color-ios-yellow: #FFCC00;
+  --color-ios-purple: #AF52DE;
+  --color-ios-pink: #FF2D55;
+  --color-ios-teal: #5AC8FA;
+  --color-ios-gray: #8E8E93;
+  
+  /* iOS Grays */
+  --color-ios-gray-1: #8E8E93;
+  --color-ios-gray-2: #AEAEB2;
+  --color-ios-gray-3: #C7C7CC;
+  --color-ios-gray-4: #D1D1D6;
+  --color-ios-gray-5: #E5E5EA;
+  --color-ios-gray-6: #F2F2F7;
+  
+  /* iOS Background */
+  --color-ios-bg: #F2F2F7;
+  --color-ios-card: #FFFFFF;
+  --color-ios-separator: #C6C6C8;
+}
+
+/* Safe areas */
+@utility safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* iOS-style touch feedback */
+@utility ios-active {
+  &:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* iOS grouped list style */
+@utility ios-card {
+  background: var(--color-ios-card);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* iOS large title header */
+@utility ios-header {
+  background: var(--color-ios-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* iOS tab bar */
+@utility ios-tabbar {
+  background: rgba(249, 249, 249, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--color-ios-separator);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ios-bg: #000000;
+    --color-ios-card: #1C1C1E;
+    --color-ios-separator: #38383A;
+  }
+  
+  .ios-card {
+    background: #1C1C1E;
+  }
+  
+  .ios-header {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  .ios-tabbar {
+    background: rgba(28, 28, 30, 0.94);
+  }
+}
