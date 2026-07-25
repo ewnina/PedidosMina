@@ -1,9 +1,11 @@
+import type { Client } from 'whatsapp-web.js';
+
 export type BotStatus = 'disconnected' | 'starting' | 'waiting_qr' | 'connected' | 'reconnecting' | 'authentication_failed' | 'stopped';
 
 export interface BotInstance {
   providerId: string;
   status: BotStatus;
-  client: unknown;
+  client: Client;
   qrCode: string | null;
   lastConnectedAt: Date | null;
 }

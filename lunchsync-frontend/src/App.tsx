@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { LoginPage } from './pages/auth/LoginPage';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { DashboardPage } from './pages/admin/DashboardPage';
@@ -12,6 +13,7 @@ import { MenusPage } from './pages/provider/menus/MenusPage';
 import { OrdersPage } from './pages/provider/orders/OrdersPage';
 import { WhatsAppPage } from './pages/provider/whatsapp/WhatsAppPage';
 import { ZonesPage } from './pages/provider/zones/ZonesPage';
+import { EmployeeAuthPage } from './pages/employee/EmployeeAuthPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { isAuthenticated } = useAuth();
@@ -25,6 +27,7 @@ function LoginRedirect(): React.JSX.Element {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <LoginPage />;
   if (user?.role === 'superuser') return <Navigate to="/admin" replace />;
+  if (user?.role === 'employee') return <Navigate to="/employee" replace />;
   return <Navigate to="/provider" replace />;
 }
 
@@ -32,6 +35,7 @@ function AppRoutes(): React.JSX.Element {
   return (
     <Routes>
       <Route path="/auth/login" element={<LoginRedirect />} />
+      <Route path="/employee/auth" element={<EmployeeAuthPage />} />
 
       {/* Superuser Admin */}
       <Route
@@ -73,9 +77,11 @@ function AppRoutes(): React.JSX.Element {
 function App(): React.JSX.Element {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

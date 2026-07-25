@@ -41,28 +41,28 @@ export function DashboardPage(): React.JSX.Element {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <p className="text-[#8E8E93]">Cargando...</p>
+          <p className="text-[var(--c-text-secondary)]">Cargando...</p>
         </div>
       ) : (
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-3">
             <IosCard>
-              <p className="text-[13px] text-[#8E8E93]">Proveedores</p>
-              <p className="text-[34px] font-bold text-[#007AFF]">{stats.totalProviders}</p>
+              <p className="text-[13px] text-[var(--c-text-secondary)]">Proveedores</p>
+              <p className="text-[34px] font-bold text-[var(--c-accent)]">{stats.totalProviders}</p>
             </IosCard>
 
             <IosCard>
-              <p className="text-[13px] text-[#8E8E93]">Activos</p>
+              <p className="text-[13px] text-[var(--c-text-secondary)]">Activos</p>
               <p className="text-[34px] font-bold text-[#34C759]">{stats.activeProviders}</p>
             </IosCard>
 
             <IosCard>
-              <p className="text-[13px] text-[#8E8E93]">Cuentas</p>
+              <p className="text-[13px] text-[var(--c-text-secondary)]">Cuentas</p>
               <p className="text-[34px] font-bold text-[#FF9500]">{stats.totalAccounts}</p>
             </IosCard>
 
             <IosCard>
-              <p className="text-[13px] text-[#8E8E93]">Inactivos</p>
+              <p className="text-[13px] text-[var(--c-text-secondary)]">Inactivos</p>
               <p className="text-[34px] font-bold text-[#FF3B30]">
                 {stats.totalProviders - stats.activeProviders}
               </p>
@@ -74,17 +74,17 @@ export function DashboardPage(): React.JSX.Element {
             <div className="space-y-2">
               <a
                 href="/admin/providers"
-                className="flex items-center justify-between p-3 bg-[#F2F2F7] rounded-lg active:bg-[#E5E5EA] transition-colors"
+                className="flex items-center justify-between p-3 bg-[var(--c-bg-input)] rounded-lg active:bg-[var(--c-separator)] transition-colors"
               >
                 <span className="text-[15px]">Gestionar Proveedores</span>
-                <span className="text-[#8E8E93]">→</span>
+                <span className="text-[var(--c-text-secondary)]">→</span>
               </a>
               <a
                 href="/admin/accounts"
-                className="flex items-center justify-between p-3 bg-[#F2F2F7] rounded-lg active:bg-[#E5E5EA] transition-colors"
+                className="flex items-center justify-between p-3 bg-[var(--c-bg-input)] rounded-lg active:bg-[var(--c-separator)] transition-colors"
               >
                 <span className="text-[15px]">Gestionar Cuentas</span>
-                <span className="text-[#8E8E93]">→</span>
+                <span className="text-[var(--c-text-secondary)]">→</span>
               </a>
             </div>
           </IosCard>

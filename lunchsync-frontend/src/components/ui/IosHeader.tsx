@@ -22,7 +22,7 @@ export function IosHeader({ title, subtitle, leftAction, rightAction }: IosHeade
       {subtitle && (
         <div className="pb-2">
           <h1 className="text-[34px] font-bold">{title}</h1>
-          {subtitle && <p className="text-[13px] text-[#8E8E93] mt-1">{subtitle}</p>}
+          {subtitle && <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{subtitle}</p>}
         </div>
       )}
     </header>

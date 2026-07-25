@@ -72,11 +72,11 @@ export function AccountsPage(): React.JSX.Element {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <p className="text-[#8E8E93]">Cargando cuentas...</p>
+          <p className="text-[var(--c-text-secondary)]">Cargando cuentas...</p>
         </div>
       ) : accounts.length === 0 ? (
         <IosCard className="text-center py-8">
-          <p className="text-[#8E8E93] text-[15px]">No hay cuentas registradas</p>
+          <p className="text-[var(--c-text-secondary)] text-[15px]">No hay cuentas registradas</p>
           <IosButton className="mt-4" onClick={() => setShowModal(true)}>
             Crear Primera Cuenta
           </IosButton>
@@ -99,12 +99,12 @@ export function AccountsPage(): React.JSX.Element {
                       {account.role}
                     </span>
                   </div>
-                  <p className="text-[13px] text-[#8E8E93] mt-1">{account.email}</p>
-                  <p className="text-[11px] text-[#AEAEB2] mt-1">
+                  <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{account.email}</p>
+                  <p className="text-[11px] text-[var(--c-text-secondary)] mt-1">
                     Proveedor: {getProviderName(account.providerId)}
                   </p>
                   {account.lastLogin && (
-                    <p className="text-[11px] text-[#AEAEB2] mt-1">
+                    <p className="text-[11px] text-[var(--c-text-secondary)] mt-1">
                       Último login: {new Date(account.lastLogin).toLocaleDateString()}
                     </p>
                   )}
@@ -127,13 +127,13 @@ export function AccountsPage(): React.JSX.Element {
       <IosModal isOpen={showModal} onClose={() => setShowModal(false)} title="Nueva Cuenta">
         <form onSubmit={(e) => void handleCreate(e)} className="p-4 space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Proveedor</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Proveedor</label>
             <select
               value={newAccount.providerId}
               onChange={(e) =>
                 setNewAccount((prev) => ({ ...prev, providerId: e.target.value }))
               }
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               required
             >
               <option value="">Seleccionar proveedor</option>
@@ -148,7 +148,7 @@ export function AccountsPage(): React.JSX.Element {
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">
               Nombre Completo
             </label>
             <input
@@ -157,35 +157,35 @@ export function AccountsPage(): React.JSX.Element {
               onChange={(e) =>
                 setNewAccount((prev) => ({ ...prev, fullName: e.target.value }))
               }
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="Ej: Juan Pérez"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Email</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Email</label>
             <input
               type="email"
               value={newAccount.email}
               onChange={(e) =>
                 setNewAccount((prev) => ({ ...prev, email: e.target.value }))
               }
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="usuario@ejemplo.com"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Contraseña</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Contraseña</label>
             <input
               type="password"
               value={newAccount.password}
               onChange={(e) =>
                 setNewAccount((prev) => ({ ...prev, password: e.target.value }))
               }
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="Mínimo 6 caracteres"
               minLength={6}
               required
@@ -193,13 +193,13 @@ export function AccountsPage(): React.JSX.Element {
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Rol</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Rol</label>
             <select
               value={newAccount.role}
               onChange={(e) =>
                 setNewAccount((prev) => ({ ...prev, role: e.target.value }))
               }
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
             >
               <option value="operator">Operador</option>
               <option value="admin">Administrador</option>

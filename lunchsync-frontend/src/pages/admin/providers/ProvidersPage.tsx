@@ -39,7 +39,7 @@ export function ProvidersPage(): React.JSX.Element {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <p className="text-[#8E8E93]">Cargando proveedores...</p>
+          <p className="text-[var(--c-text-secondary)]">Cargando proveedores...</p>
         </div>
       ) : error ? (
         <div className="bg-[#FF3B30]/10 p-4 rounded-lg">
@@ -47,7 +47,7 @@ export function ProvidersPage(): React.JSX.Element {
         </div>
       ) : providers.length === 0 ? (
         <IosCard className="text-center py-8">
-          <p className="text-[#8E8E93] text-[15px]">No hay proveedores registrados</p>
+          <p className="text-[var(--c-text-secondary)] text-[15px]">No hay proveedores registrados</p>
           <IosButton className="mt-4" onClick={() => setShowModal(true)}>
             Crear Primer Proveedor
           </IosButton>
@@ -70,8 +70,8 @@ export function ProvidersPage(): React.JSX.Element {
                       {provider.isActive ? 'Activo' : 'Inactivo'}
                     </span>
                   </div>
-                  <p className="text-[13px] text-[#8E8E93] mt-1">{provider.phoneNumber}</p>
-                  <p className="text-[11px] text-[#AEAEB2] mt-1">
+                  <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{provider.phoneNumber}</p>
+                  <p className="text-[11px] text-[var(--c-text-secondary)] mt-1">
                     ID: {provider.id.slice(0, 8)}...
                   </p>
                 </div>
@@ -94,21 +94,21 @@ export function ProvidersPage(): React.JSX.Element {
       <IosModal isOpen={showModal} onClose={() => setShowModal(false)} title="Nuevo Proveedor">
         <form onSubmit={(e) => void handleCreate(e)} className="p-4 space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">
               Nombre del Proveedor
             </label>
             <input
               type="text"
               value={newProvider.name}
               onChange={(e) => setNewProvider((prev) => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="Ej: Cocina La Abuela"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">
               Teléfono
             </label>
             <input
@@ -117,7 +117,7 @@ export function ProvidersPage(): React.JSX.Element {
               onChange={(e) =>
                 setNewProvider((prev) => ({ ...prev, phoneNumber: e.target.value }))
               }
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="Ej: +584121234567"
               required
             />

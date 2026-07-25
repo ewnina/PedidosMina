@@ -13,7 +13,7 @@ import { BotStatusResponse, QrResponse } from '../types';
 const router = Router();
 
 router.get('/status/:providerId', (req: Request, res: Response) => {
-  const { providerId } = req.params;
+  const providerId = req.params['providerId'] as string;
   const instance = getBotInstance(providerId);
   const response: BotStatusResponse = {
     providerId,
@@ -33,31 +33,31 @@ router.get('/status', (_req: Request, res: Response) => {
 });
 
 router.post('/start/:providerId', async (req: Request, res: Response) => {
-  const { providerId } = req.params;
+  const providerId = req.params['providerId'] as string;
   const status = await startBot(providerId);
   res.json({ providerId, status });
 });
 
-router.post('/stop/:providerId', (req: Request, res: Response) => {
-  const { providerId } = req.params;
-  const status = stopBot(providerId);
+router.post('/stop/:providerId', async (req: Request, res: Response) => {
+  const providerId = req.params['providerId'] as string;
+  const status = await stopBot(providerId);
   res.json({ providerId, status });
 });
 
-router.post('/restart/:providerId', (req: Request, res: Response) => {
-  const { providerId } = req.params;
-  const status = restartBot(providerId);
+router.post('/restart/:providerId', async (req: Request, res: Response) => {
+  const providerId = req.params['providerId'] as string;
+  const status = await restartBot(providerId);
   res.json({ providerId, status });
 });
 
-router.post('/unlink/:providerId', (req: Request, res: Response) => {
-  const { providerId } = req.params;
-  unlinkBot(providerId);
+router.post('/unlink/:providerId', async (req: Request, res: Response) => {
+  const providerId = req.params['providerId'] as string;
+  await unlinkBot(providerId);
   res.json({ providerId, status: 'disconnected' });
 });
 
 router.get('/qr/:providerId', (req: Request, res: Response) => {
-  const { providerId } = req.params;
+  const providerId = req.params['providerId'] as string;
   const instance = getBotInstance(providerId);
   const response: QrResponse = {
     providerId,

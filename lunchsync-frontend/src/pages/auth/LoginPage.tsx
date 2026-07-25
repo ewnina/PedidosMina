@@ -29,33 +29,33 @@ export function LoginPage(): React.JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F7] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--c-bg-base)] flex items-center justify-center p-4">
       <div className="w-full max-w-[340px]">
         <div className="text-center mb-8">
-          <h1 className="text-[34px] font-bold text-black">LunchSync</h1>
-          <p className="text-[15px] text-[#8E8E93] mt-2">Panel de Administración</p>
+          <h1 className="text-[34px] font-bold text-[var(--c-text-primary)]">LunchSync</h1>
+          <p className="text-[15px] text-[var(--c-text-secondary)] mt-2">Panel de Administración</p>
         </div>
 
         <form onSubmit={handleSubmit} className="ios-card p-6 space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Email</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-base)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="admin@lunchsync.com"
               required
             />
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Contraseña</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Contraseña</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-base)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="••••••••"
               required
             />
@@ -68,7 +68,7 @@ export function LoginPage(): React.JSX.Element {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#007AFF] text-white rounded-full text-[17px] font-medium active:scale-[0.97] transition-transform disabled:opacity-50"
+            className="w-full py-3 bg-[var(--c-accent)] text-white rounded-full text-[17px] font-medium active:scale-[0.97] transition-transform disabled:opacity-50"
           >
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>

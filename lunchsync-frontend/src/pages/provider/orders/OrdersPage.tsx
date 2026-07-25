@@ -39,8 +39,8 @@ export function OrdersPage(): React.JSX.Element {
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors ${
               filter === f
-                ? 'bg-[#007AFF] text-white'
-                : 'bg-[#E5E5EA] text-[#8E8E93]'
+                ? 'bg-[var(--c-accent)] text-white'
+                : 'bg-[var(--c-bg-input)] text-[var(--c-text-secondary)]'
             }`}
           >
             {f === 'all' ? 'Todos' : statusLabels[f]}
@@ -50,11 +50,11 @@ export function OrdersPage(): React.JSX.Element {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <p className="text-[#8E8E93]">Cargando pedidos...</p>
+          <p className="text-[var(--c-text-secondary)]">Cargando pedidos...</p>
         </div>
       ) : filteredOrders.length === 0 ? (
         <IosCard className="text-center py-8">
-          <p className="text-[#8E8E93] text-[15px]">No hay pedidos {filter !== 'all' ? 'con este estado' : ''}</p>
+          <p className="text-[var(--c-text-secondary)] text-[15px]">No hay pedidos {filter !== 'all' ? 'con este estado' : ''}</p>
         </IosCard>
       ) : (
         <div className="space-y-3 mt-4">
@@ -68,10 +68,10 @@ export function OrdersPage(): React.JSX.Element {
                       {statusLabels[order.orderStatus] ?? order.orderStatus}
                     </span>
                   </div>
-                  <p className="text-[13px] text-[#8E8E93] mt-1">{order.employeeName} • {order.employeePhone}</p>
-                  <p className="text-[13px] text-[#8E8E93]">📍 {order.deliveryZoneName}</p>
+                  <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{order.employeeName} • {order.employeePhone}</p>
+                  <p className="text-[13px] text-[var(--c-text-secondary)]">📍 {order.deliveryZoneName}</p>
                 </div>
-                <span className="text-[17px] font-bold text-[#007AFF]">${order.totalAmount.toFixed(2)}</span>
+                <span className="text-[17px] font-bold text-[var(--c-accent)]">${order.totalAmount.toFixed(2)}</span>
               </div>
 
               {order.specialInstructions && (

@@ -21,7 +21,7 @@ export function IosTabBar({ tabs, activeTab, onTabChange }: IosTabBarProps): Rea
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-              activeTab === tab.id ? 'text-[#007AFF]' : 'text-[#8E8E93]'
+              activeTab === tab.id ? 'text-[var(--c-accent)]' : 'text-[var(--c-text-secondary)]'
             }`}
           >
             <span className="text-[24px]">{tab.icon}</span>

@@ -14,6 +14,8 @@ import { MenuServicesModule } from './modules/menus/menu-services/menu-services.
 import { ComboGroupsModule } from './modules/menus/combo-groups/combo-groups.module';
 import { ComboOptionsModule } from './modules/menus/combo-options/combo-options.module';
 import { DeliveryZonesModule } from './modules/delivery-zones/delivery-zones.module';
+import { UsersModule } from './modules/users/users.module';
+import { BotModule } from './modules/bot/bot.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -40,6 +42,8 @@ import { AppService } from './app.service';
     ComboGroupsModule,
     ComboOptionsModule,
     DeliveryZonesModule,
+    UsersModule,
+    BotModule,
   ],
   controllers: [AppController],
   providers: [AppService],

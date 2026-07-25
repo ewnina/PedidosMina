@@ -11,10 +11,10 @@ interface IosButtonProps {
 }
 
 const variants = {
-  primary: 'bg-[#007AFF] text-white active:bg-[#0056CC]',
-  secondary: 'bg-[#E5E5EA] text-black active:bg-[#D1D1D6]',
+  primary: 'bg-[#34C759] text-white active:bg-[#10B981] dark:bg-[#30D158] dark:text-black dark:active:bg-[#28B34A]',
+  secondary: 'bg-[var(--c-bg-input)] text-[var(--c-text-primary)] active:bg-[color-mix(in_srgb,var(--c-bg-input)_85%,var(--c-text-primary))]',
   destructive: 'bg-[#FF3B30] text-white active:bg-[#CC2F26]',
-  plain: 'bg-transparent text-[#007AFF] active:bg-[#E5E5EA]',
+  plain: 'bg-transparent text-[var(--c-accent)] active:bg-[var(--c-bg-input)]',
 };
 
 const sizes = {

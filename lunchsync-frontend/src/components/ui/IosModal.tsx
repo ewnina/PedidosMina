@@ -22,11 +22,11 @@ export function IosModal({ isOpen, onClose, title, children }: IosModalProps): R
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50 mb-10">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[14px] max-h-[85vh] overflow-hidden safe-bottom">
+      <div className="absolute bottom-0 left-0 right-0 bg-[var(--c-bg-card)] rounded-t-[14px] max-h-[85vh] overflow-hidden safe-bottom">
         {title && (
-          <div className="px-4 py-3 border-b border-[#E5E5EA]">
+          <div className="px-4 py-3 border-b border-[var(--c-separator)]">
             <h2 className="text-[17px] font-semibold text-center">{title}</h2>
           </div>
         )}

@@ -178,10 +178,10 @@ export function MenusPage(): React.JSX.Element {
 
       {view === 'menus' && (
         loading ? (
-          <div className="flex justify-center py-8"><p className="text-[#8E8E93]">Cargando menús...</p></div>
+          <div className="flex justify-center py-8"><p className="text-[var(--c-text-secondary)]">Cargando menús...</p></div>
         ) : menus.length === 0 ? (
           <IosCard className="text-center py-8">
-            <p className="text-[#8E8E93] text-[15px]">No hay menús creados</p>
+            <p className="text-[var(--c-text-secondary)] text-[15px]">No hay menús creados</p>
             <IosButton className="mt-4" onClick={() => openCreate('menu')}>Crear Primer Menú</IosButton>
           </IosCard>
         ) : (
@@ -191,7 +191,7 @@ export function MenusPage(): React.JSX.Element {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-[17px] font-semibold">{formatDate(menu.servingDate)}</h3>
-                    <p className="text-[13px] text-[#8E8E93] mt-1">
+                    <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">
                       Corte: {new Date(menu.orderCutoffTime).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                     <div className="flex gap-2 mt-2">
@@ -212,10 +212,10 @@ export function MenusPage(): React.JSX.Element {
 
       {view === 'services' && (
         servicesLoading ? (
-          <div className="flex justify-center py-8"><p className="text-[#8E8E93]">Cargando servicios...</p></div>
+          <div className="flex justify-center py-8"><p className="text-[var(--c-text-secondary)]">Cargando servicios...</p></div>
         ) : services.length === 0 ? (
           <IosCard className="text-center py-8">
-            <p className="text-[#8E8E93] text-[15px]">No hay servicios en este menú</p>
+            <p className="text-[var(--c-text-secondary)] text-[15px]">No hay servicios en este menú</p>
             <IosButton className="mt-4" onClick={() => openCreate('service')}>Agregar Servicio</IosButton>
           </IosCard>
         ) : (
@@ -225,14 +225,14 @@ export function MenusPage(): React.JSX.Element {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-[17px] font-semibold">{service.name}</h3>
-                    {service.description && <p className="text-[13px] text-[#8E8E93] mt-1">{service.description}</p>}
-                    <p className="text-[15px] font-medium text-[#007AFF] mt-1">${service.basePrice.toFixed(2)}</p>
+                    {service.description && <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{service.description}</p>}
+                    <p className="text-[15px] font-medium text-[var(--c-accent)] mt-1">${service.basePrice.toFixed(2)}</p>
                     <div className="flex gap-2 mt-2">
                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${service.isAvailable ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-[#FF3B30]/10 text-[#FF3B30]'}`}>
                         {service.isAvailable ? 'Disponible' : 'No disponible'}
                       </span>
                       {service.totalStock != null && (
-                        <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[#F2F2F7] text-[#8E8E93]">
+                        <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[var(--c-bg-input)] text-[var(--c-text-secondary)]">
                           Stock: {service.remainingStock ?? service.totalStock}/{service.totalStock}
                         </span>
                       )}
@@ -253,10 +253,10 @@ export function MenusPage(): React.JSX.Element {
 
       {view === 'groups' && (
         groupsLoading ? (
-          <div className="flex justify-center py-8"><p className="text-[#8E8E93]">Cargando grupos...</p></div>
+          <div className="flex justify-center py-8"><p className="text-[var(--c-text-secondary)]">Cargando grupos...</p></div>
         ) : groups.length === 0 ? (
           <IosCard className="text-center py-8">
-            <p className="text-[#8E8E93] text-[15px]">No hay grupos en este servicio</p>
+            <p className="text-[var(--c-text-secondary)] text-[15px]">No hay grupos en este servicio</p>
             <IosButton className="mt-4" onClick={() => openCreate('group')}>Agregar Grupo</IosButton>
           </IosCard>
         ) : (
@@ -267,10 +267,10 @@ export function MenusPage(): React.JSX.Element {
                   <div className="flex-1">
                     <h3 className="text-[17px] font-semibold">{group.groupName}</h3>
                     <div className="flex gap-2 mt-2">
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${group.isRequired ? 'bg-[#FF9500]/10 text-[#FF9500]' : 'bg-[#F2F2F7] text-[#8E8E93]'}`}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${group.isRequired ? 'bg-[#FF9500]/10 text-[#FF9500]' : 'bg-[var(--c-bg-input)] text-[var(--c-text-secondary)]'}`}>
                         {group.isRequired ? 'Requerido' : 'Opcional'}
                       </span>
-                      <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[#F2F2F7] text-[#8E8E93]">
+                      <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[var(--c-bg-input)] text-[var(--c-text-secondary)]">
                         Seleccionar {group.minSelect}-{group.maxSelect}
                       </span>
                     </div>
@@ -288,10 +288,10 @@ export function MenusPage(): React.JSX.Element {
 
       {view === 'options' && (
         optionsLoading ? (
-          <div className="flex justify-center py-8"><p className="text-[#8E8E93]">Cargando opciones...</p></div>
+          <div className="flex justify-center py-8"><p className="text-[var(--c-text-secondary)]">Cargando opciones...</p></div>
         ) : options.length === 0 ? (
           <IosCard className="text-center py-8">
-            <p className="text-[#8E8E93] text-[15px]">No hay opciones en este grupo</p>
+            <p className="text-[var(--c-text-secondary)] text-[15px]">No hay opciones en este grupo</p>
             <IosButton className="mt-4" onClick={() => openCreate('option')}>Agregar Opción</IosButton>
           </IosCard>
         ) : (
@@ -301,14 +301,14 @@ export function MenusPage(): React.JSX.Element {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-[17px] font-semibold">{option.optionName}</h3>
-                    <p className="text-[15px] font-medium text-[#007AFF] mt-1">
+                    <p className="text-[15px] font-medium text-[var(--c-accent)] mt-1">
                       {option.extraPrice > 0 ? `+$${option.extraPrice.toFixed(2)}` : 'Sin costo extra'}
                     </p>
                     <div className="flex gap-2 mt-2">
                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${option.isAvailable ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-[#FF3B30]/10 text-[#FF3B30]'}`}>
                         {option.isAvailable ? 'Disponible' : 'No disponible'}
                       </span>
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${option.isUnlimited ? 'bg-[#F2F2F7] text-[#8E8E93]' : 'bg-[#007AFF]/10 text-[#007AFF]'}`}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${option.isUnlimited ? 'bg-[var(--c-bg-input)] text-[var(--c-text-secondary)]' : 'bg-[#007AFF]/10 text-[var(--c-accent)]'}`}>
                         {option.isUnlimited ? 'Ilimitado' : `Stock: ${option.stockQuantity ?? option.initialStock ?? 0}`}
                       </span>
                     </div>
@@ -334,12 +334,12 @@ export function MenusPage(): React.JSX.Element {
         {modalType === 'menu' && (
           <form onSubmit={(e) => void handleCreateMenu(e)} className="p-4 space-y-4">
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Fecha de Servicio</label>
-              <input type="date" value={newMenu.servingDate} onChange={(e) => setNewMenu((p) => ({ ...p, servingDate: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Fecha de Servicio</label>
+              <input type="date" value={newMenu.servingDate} onChange={(e) => setNewMenu((p) => ({ ...p, servingDate: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Hora Límite de Pedidos</label>
-              <input type="time" value={newMenu.orderCutoffTime} onChange={(e) => setNewMenu((p) => ({ ...p, orderCutoffTime: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Hora Límite de Pedidos</label>
+              <input type="time" value={newMenu.orderCutoffTime} onChange={(e) => setNewMenu((p) => ({ ...p, orderCutoffTime: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required />
             </div>
             <div className="flex gap-3 pt-2">
               <IosButton variant="secondary" className="flex-1" onClick={() => setShowModal(false)} type="button">Cancelar</IosButton>
@@ -351,20 +351,20 @@ export function MenusPage(): React.JSX.Element {
         {modalType === 'service' && (
           <form onSubmit={(e) => void handleCreateService(e)} className="p-4 space-y-4">
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Nombre</label>
-              <input type="text" value={newService.name} onChange={(e) => setNewService((p) => ({ ...p, name: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Nombre</label>
+              <input type="text" value={newService.name} onChange={(e) => setNewService((p) => ({ ...p, name: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Descripción</label>
-              <input type="text" value={newService.description} onChange={(e) => setNewService((p) => ({ ...p, description: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Descripción</label>
+              <input type="text" value={newService.description} onChange={(e) => setNewService((p) => ({ ...p, description: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Precio Base ($)</label>
-              <input type="number" step="0.01" min="0" value={newService.basePrice} onChange={(e) => setNewService((p) => ({ ...p, basePrice: parseFloat(e.target.value) || 0 }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Precio Base ($)</label>
+              <input type="number" step="0.01" min="0" value={newService.basePrice} onChange={(e) => setNewService((p) => ({ ...p, basePrice: parseFloat(e.target.value) || 0 }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Stock Total (opcional, vacío = ilimitado)</label>
-              <input type="number" min="0" value={newService.totalStock} onChange={(e) => setNewService((p) => ({ ...p, totalStock: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Stock Total (opcional, vacío = ilimitado)</label>
+              <input type="number" min="0" value={newService.totalStock} onChange={(e) => setNewService((p) => ({ ...p, totalStock: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" />
             </div>
             <div className="flex gap-3 pt-2">
               <IosButton variant="secondary" className="flex-1" onClick={() => setShowModal(false)} type="button">Cancelar</IosButton>
@@ -376,8 +376,8 @@ export function MenusPage(): React.JSX.Element {
         {modalType === 'group' && (
           <form onSubmit={(e) => void handleCreateGroup(e)} className="p-4 space-y-4">
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Nombre del Grupo</label>
-              <input type="text" value={newGroup.groupName} onChange={(e) => setNewGroup((p) => ({ ...p, groupName: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required placeholder="Ej: Arroz, Carne, Ensalada" />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Nombre del Grupo</label>
+              <input type="text" value={newGroup.groupName} onChange={(e) => setNewGroup((p) => ({ ...p, groupName: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required placeholder="Ej: Arroz, Carne, Ensalada" />
             </div>
             <div className="flex items-center gap-3">
               <input type="checkbox" id="isRequired" checked={newGroup.isRequired} onChange={(e) => setNewGroup((p) => ({ ...p, isRequired: e.target.checked }))} className="w-5 h-5 rounded accent-[#007AFF]" />
@@ -385,12 +385,12 @@ export function MenusPage(): React.JSX.Element {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Mín. selección</label>
-                <input type="number" min="1" value={newGroup.minSelect} onChange={(e) => setNewGroup((p) => ({ ...p, minSelect: parseInt(e.target.value) || 1 }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" />
+                <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Mín. selección</label>
+                <input type="number" min="1" value={newGroup.minSelect} onChange={(e) => setNewGroup((p) => ({ ...p, minSelect: parseInt(e.target.value) || 1 }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Máx. selección</label>
-                <input type="number" min="1" value={newGroup.maxSelect} onChange={(e) => setNewGroup((p) => ({ ...p, maxSelect: parseInt(e.target.value) || 1 }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" />
+                <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Máx. selección</label>
+                <input type="number" min="1" value={newGroup.maxSelect} onChange={(e) => setNewGroup((p) => ({ ...p, maxSelect: parseInt(e.target.value) || 1 }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" />
               </div>
             </div>
             <div className="flex gap-3 pt-2">
@@ -403,12 +403,12 @@ export function MenusPage(): React.JSX.Element {
         {modalType === 'option' && (
           <form onSubmit={(e) => void handleCreateOption(e)} className="p-4 space-y-4">
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Nombre de la Opción</label>
-              <input type="text" value={newOption.optionName} onChange={(e) => setNewOption((p) => ({ ...p, optionName: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required placeholder="Ej: Arroz Blanco, Pollo Asado" />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Nombre de la Opción</label>
+              <input type="text" value={newOption.optionName} onChange={(e) => setNewOption((p) => ({ ...p, optionName: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required placeholder="Ej: Arroz Blanco, Pollo Asado" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Precio Extra ($)</label>
-              <input type="number" step="0.01" min="0" value={newOption.extraPrice} onChange={(e) => setNewOption((p) => ({ ...p, extraPrice: parseFloat(e.target.value) || 0 }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" />
+              <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Precio Extra ($)</label>
+              <input type="number" step="0.01" min="0" value={newOption.extraPrice} onChange={(e) => setNewOption((p) => ({ ...p, extraPrice: parseFloat(e.target.value) || 0 }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" />
             </div>
             <div className="flex items-center gap-3">
               <input type="checkbox" id="isUnlimited" checked={newOption.isUnlimited} onChange={(e) => setNewOption((p) => ({ ...p, isUnlimited: e.target.checked }))} className="w-5 h-5 rounded accent-[#007AFF]" />
@@ -416,8 +416,8 @@ export function MenusPage(): React.JSX.Element {
             </div>
             {!newOption.isUnlimited && (
               <div>
-                <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Stock Inicial</label>
-                <input type="number" min="0" value={newOption.initialStock} onChange={(e) => setNewOption((p) => ({ ...p, initialStock: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]" required />
+                <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Stock Inicial</label>
+                <input type="number" min="0" value={newOption.initialStock} onChange={(e) => setNewOption((p) => ({ ...p, initialStock: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]" required />
               </div>
             )}
             <div className="flex gap-3 pt-2">

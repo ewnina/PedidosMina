@@ -73,11 +73,11 @@ export function ZonesPage(): React.JSX.Element {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <p className="text-[#8E8E93]">Cargando zonas...</p>
+          <p className="text-[var(--c-text-secondary)]">Cargando zonas...</p>
         </div>
       ) : zones.length === 0 ? (
         <IosCard className="text-center py-8">
-          <p className="text-[#8E8E93] text-[15px]">No hay zonas creadas</p>
+          <p className="text-[var(--c-text-secondary)] text-[15px]">No hay zonas creadas</p>
           <IosButton className="mt-4" onClick={() => setShowModal(true)}>
             Crear Primera Zona
           </IosButton>
@@ -99,7 +99,7 @@ export function ZonesPage(): React.JSX.Element {
                     </span>
                   </div>
                   {zone.description && (
-                    <p className="text-[13px] text-[#8E8E93] mt-1">{zone.description}</p>
+                    <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{zone.description}</p>
                   )}
                 </div>
                 <button
@@ -121,23 +121,23 @@ export function ZonesPage(): React.JSX.Element {
       <IosModal isOpen={showModal} onClose={() => setShowModal(false)} title="Nueva Zona">
         <form onSubmit={(e) => void handleCreate(e)} className="p-4 space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Nombre de la Zona</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Nombre de la Zona</label>
             <input
               type="text"
               value={newZone.zoneName}
               onChange={(e) => setNewZone((prev) => ({ ...prev, zoneName: e.target.value }))}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="Ej: Zona Norte"
               required
             />
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-[#8E8E93] mb-1">Descripción (opcional)</label>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1">Descripción (opcional)</label>
             <input
               type="text"
               value={newZone.description}
               onChange={(e) => setNewZone((prev) => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-2.5 rounded-lg bg-[#F2F2F7] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+              className="w-full px-3 py-2.5 rounded-lg bg-[var(--c-bg-input)] text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]"
               placeholder="Ej: Area de cobertura norte"
             />
           </div>
