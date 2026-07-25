@@ -20,12 +20,19 @@ export class OrderWhatsAppListener {
   async handleOrderCreated(event: OrderCreatedEvent): Promise<void> {
     this.logger.log(`WhatsApp notification for order ${event.orderData.orderNumber}`);
 
+    const status = await this.whatsappService.getStatus(event.providerId);
+
+    if (status.status !== 'connected') {
+      this.logger.warn(`Bot not connected for provider ${event.providerId} (status: ${status.status})`);
+      return;
+    }
+
     const bot = await this.providerBotRepo.findOne({
       where: { providerId: event.providerId },
     });
 
-    if (!bot || !bot.isOnline) {
-      this.logger.warn(`Bot not connected for provider ${event.providerId}`);
+    if (!bot || !bot.whatsappGroupId) {
+      this.logger.warn(`No WhatsApp group configured for provider ${event.providerId}`);
       return;
     }
 
@@ -37,8 +44,10 @@ export class OrderWhatsAppListener {
         orderNumber: event.orderData.orderNumber,
         employeeName: event.orderData.employeeName,
         employeePhone: event.orderData.employeePhone,
-        serviceName: '',
+        serviceName: event.orderData.serviceName,
         totalAmount: event.orderData.totalAmount,
+        specialInstructions: event.orderData.specialInstructions ?? undefined,
+        deliveryZoneName: event.orderData.deliveryZoneName,
       },
     );
   }

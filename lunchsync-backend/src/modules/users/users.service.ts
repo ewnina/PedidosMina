@@ -24,4 +24,20 @@ export class UsersService {
     });
     return this.userRepo.save(user);
   }
+
+  async createPendingUser(phoneNumber: string): Promise<User> {
+    const user = this.userRepo.create({
+      phoneNumber,
+      fullName: `Empleado ${phoneNumber.slice(-4)}`,
+    });
+    return this.userRepo.save(user);
+  }
+
+  async updateProfile(userId: string, data: { fullName: string; employeeCode?: string }): Promise<User> {
+    await this.userRepo.update(userId, {
+      fullName: data.fullName,
+      employeeCode: data.employeeCode,
+    });
+    return this.userRepo.findOne({ where: { id: userId } }) as Promise<User>;
+  }
 }

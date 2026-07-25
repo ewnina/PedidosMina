@@ -1,10 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IWhatsappSender } from './interfaces/whatsapp-sender.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WhatsappLog } from './entities/whatsapp-log.entity';
 import { MessageFactory } from './message-factory';
 import { WhatsappGateway } from './whatsapp.gateway';
+import { ProviderBot } from '../provider-bots/entities/provider-bot.entity';
 
 @Injectable()
 export class WhatsappService {
@@ -14,6 +15,8 @@ export class WhatsappService {
   constructor(
     @InjectRepository(WhatsappLog)
     private readonly whatsappLogRepo: Repository<WhatsappLog>,
+    @InjectRepository(ProviderBot)
+    private readonly providerBotRepo: Repository<ProviderBot>,
     private readonly sender: IWhatsappSender,
     private readonly gateway: WhatsappGateway,
   ) {}
@@ -74,15 +77,33 @@ export class WhatsappService {
       totalAmount: number;
       specialInstructions?: string;
       orderId: string;
+      deliveryZoneName: string;
     },
   ): Promise<boolean> {
     const message = MessageFactory.newOrderNotification(data);
-    const success = await this.sender.sendMessage(providerId, recipient, message);
+
+    // If recipient not configured (e.g. 'pending' placeholder), fallback to provider phone
+    let target = recipient;
+    if (!target || target.trim() === '' || target === 'pending') {
+      try {
+        const bot = await this.providerBotRepo.findOne({ where: { providerId }, relations: { provider: true } });
+        if (bot && bot.provider && bot.provider.phoneNumber) {
+          target = `${bot.provider.phoneNumber}@c.us`;
+          this.logger.warn(`[WhatsApp] recipient not configured for provider ${providerId}, falling back to provider phone ${target}`);
+        } else {
+          this.logger.warn(`[WhatsApp] recipient not configured and provider phone missing for ${providerId}`);
+        }
+      } catch (err) {
+        this.logger.warn(`[WhatsApp] error resolving provider phone for fallback for ${providerId}: ${err}`);
+      }
+    }
+
+    const success = await this.sender.sendMessage(providerId, target, message);
 
     const log = this.whatsappLogRepo.create({
       providerId,
       orderId: data.orderId,
-      recipientPhoneOrGroup: recipient,
+      recipientPhoneOrGroup: target,
       messageType: 'order_notification',
       messagePayload: message,
       status: success ? 'sent' : 'failed',
@@ -131,5 +152,16 @@ export class WhatsappService {
       clearTimeout(timer);
       this.polling.delete(providerId);
     }
+  }
+
+  async updateGroup(providerId: string, whatsappGroupId: string): Promise<{ success: boolean }> {
+    let bot = await this.providerBotRepo.findOne({ where: { providerId } });
+    if (!bot) {
+      bot = this.providerBotRepo.create({ providerId, whatsappGroupId });
+    } else {
+      bot.whatsappGroupId = whatsappGroupId;
+    }
+    await this.providerBotRepo.save(bot);
+    return { success: true };
   }
 }

@@ -18,10 +18,14 @@ export class DailyMenusService {
   }
 
   async create(providerId: string, data: { servingDate: string; orderCutoffTime: string }): Promise<DailyMenu> {
+    const cutoff = data.orderCutoffTime.includes('T')
+      ? new Date(data.orderCutoffTime)
+      : new Date(`${data.servingDate}T${data.orderCutoffTime}:00`);
+
     const menu = this.menuRepo.create({
       providerId,
       servingDate: data.servingDate,
-      orderCutoffTime: new Date(data.orderCutoffTime),
+      orderCutoffTime: cutoff,
     });
     return this.menuRepo.save(menu);
   }

@@ -22,12 +22,24 @@ export function EmployeeAuthPage(): React.JSX.Element {
 
     const validate = async () => {
       try {
-        const { data } = await api.post<{ accessToken: string }>('/auth/magic-link/validate', {
+        const { data } = await api.post('/auth/magic-link/validate', {
           tokenJti: jti,
           token,
         });
-        login(data.accessToken);
-        navigate('/employee', { replace: true });
+
+        if (data.accessToken) {
+          login(data.accessToken);
+          navigate('/employee', { replace: true });
+          return;
+        }
+
+        if (data.userExists === false) {
+          navigate(`/employee/register?jti=${jti}`, { replace: true });
+          return;
+        }
+
+        setError('Respuesta inesperada del servidor.');
+        setLoading(false);
       } catch {
         setError('Enlace invalido, expirado o ya utilizado.');
         setLoading(false);

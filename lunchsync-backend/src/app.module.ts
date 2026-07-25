@@ -16,6 +16,7 @@ import { ComboOptionsModule } from './modules/menus/combo-options/combo-options.
 import { DeliveryZonesModule } from './modules/delivery-zones/delivery-zones.module';
 import { UsersModule } from './modules/users/users.module';
 import { BotModule } from './modules/bot/bot.module';
+import { EmployeeModule } from './modules/employee/employee.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -44,6 +45,7 @@ import { AppService } from './app.service';
     DeliveryZonesModule,
     UsersModule,
     BotModule,
+    EmployeeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

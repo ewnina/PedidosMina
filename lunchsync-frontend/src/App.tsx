@@ -14,6 +14,11 @@ import { OrdersPage } from './pages/provider/orders/OrdersPage';
 import { WhatsAppPage } from './pages/provider/whatsapp/WhatsAppPage';
 import { ZonesPage } from './pages/provider/zones/ZonesPage';
 import { EmployeeAuthPage } from './pages/employee/EmployeeAuthPage';
+import { EmployeeRegisterPage } from './pages/employee/EmployeeRegisterPage';
+import { EmployeeLayout } from './components/employee/EmployeeLayout';
+import { EmployeeMenuPage } from './pages/employee/EmployeeMenuPage';
+import { EmployeeOrdersPage } from './pages/employee/EmployeeOrdersPage';
+import { EmployeeProfilePage } from './pages/employee/EmployeeProfilePage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { isAuthenticated } = useAuth();
@@ -36,6 +41,7 @@ function AppRoutes(): React.JSX.Element {
     <Routes>
       <Route path="/auth/login" element={<LoginRedirect />} />
       <Route path="/employee/auth" element={<EmployeeAuthPage />} />
+      <Route path="/employee/register" element={<EmployeeRegisterPage />} />
 
       {/* Superuser Admin */}
       <Route
@@ -67,6 +73,21 @@ function AppRoutes(): React.JSX.Element {
         <Route path="orders" element={<OrdersPage />} />
         <Route path="whatsapp" element={<WhatsAppPage />} />
         <Route path="zones" element={<ZonesPage />} />
+      </Route>
+
+      {/* Employee */}
+      <Route
+        path="/employee"
+        element={
+          <ProtectedRoute>
+            <EmployeeLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/employee/menu" replace />} />
+        <Route path="menu" element={<EmployeeMenuPage />} />
+        <Route path="orders" element={<EmployeeOrdersPage />} />
+        <Route path="profile" element={<EmployeeProfilePage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/auth/login" replace />} />

@@ -8,6 +8,9 @@ export class OrderCreatedEvent {
       employeeName: string;
       employeePhone: string;
       totalAmount: number;
+      serviceName: string;
+      specialInstructions: string | null;
+      deliveryZoneName: string;
     },
   ) {}
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
 import { WhatsappService } from './whatsapp.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -35,5 +35,10 @@ export class WhatsappController {
   @Get('qr')
   getQr(@Param('providerId') providerId: string) {
     return this.whatsappService.getQr(providerId);
+  }
+
+  @Patch('group')
+  updateGroup(@Param('providerId') providerId: string, @Body() body: { whatsappGroupId: string }) {
+    return this.whatsappService.updateGroup(providerId, body.whatsappGroupId);
   }
 }

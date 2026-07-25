@@ -11,7 +11,7 @@ export class OrdersController {
   @Post()
   create(
     @Req() req: { user: { userId: string; providerId: string } },
-    @Body() body: CreateOrderDto & { employeeName: string; employeePhone: string; providerName: string },
+    @Body() body: CreateOrderDto & { employeeName: string; employeePhone: string; providerName: string; serviceName: string },
   ) {
     return this.ordersService.createOrder(
       body,
@@ -21,12 +21,14 @@ export class OrdersController {
       body.employeeName,
       body.employeePhone,
       body.providerName,
+      body.serviceName,
     );
   }
 
   @Get()
-  findAll(@Req() req: { user: { providerId: string } }, @Query('dailyMenuId') dailyMenuId?: string) {
-    return this.ordersService.findAll(req.user.providerId, dailyMenuId);
+  findAll(@Req() req: { user: { providerId: string; role: string } }, @Query('dailyMenuId') dailyMenuId?: string) {
+    const providerId = req.user.role === 'superuser' ? undefined : req.user.providerId;
+    return this.ordersService.findAll(providerId, dailyMenuId);
   }
 
   @Patch(':id/status')

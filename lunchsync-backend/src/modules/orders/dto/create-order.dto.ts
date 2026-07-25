@@ -1,4 +1,4 @@
-import { IsUUID, IsArray, IsDecimal, IsOptional, IsString } from 'class-validator';
+import { IsUUID, IsArray, IsOptional, IsString, IsNumber } from 'class-validator';
 
 export class CreateOrderDto {
   @IsUUID()
@@ -13,6 +13,9 @@ export class CreateOrderDto {
   @IsArray()
   @IsUUID('4', { each: true })
   selectedOptionIds!: string[];
+
+  @IsNumber()
+  totalAmount!: number;
 
   @IsOptional()
   @IsString()

@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { GenerateMagicLinkDto } from './dto/generate-magic-link.dto';
 import { ValidateMagicLinkDto } from './dto/validate-magic-link.dto';
+import { CompleteRegistrationDto } from './dto/complete-registration.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -23,5 +24,10 @@ export class AuthController {
   @Post('magic-link/validate')
   validateMagicLink(@Body() dto: ValidateMagicLinkDto) {
     return this.authService.validateMagicLink(dto);
+  }
+
+  @Post('complete-registration')
+  completeRegistration(@Body() dto: CompleteRegistrationDto) {
+    return this.authService.completeRegistration(dto);
   }
 }

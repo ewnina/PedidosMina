@@ -71,7 +71,7 @@ export function OrdersPage(): React.JSX.Element {
                   <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{order.employeeName} • {order.employeePhone}</p>
                   <p className="text-[13px] text-[var(--c-text-secondary)]">📍 {order.deliveryZoneName}</p>
                 </div>
-                <span className="text-[17px] font-bold text-[var(--c-accent)]">${order.totalAmount.toFixed(2)}</span>
+                <span className="text-[17px] font-bold text-[var(--c-accent)]">${Number(order.totalAmount).toFixed(2)}</span>
               </div>
 
               {order.specialInstructions && (

@@ -223,35 +223,36 @@ export async function startBot(providerId: string): Promise<BotStatus> {
       console.error(`[WhatsApp] Error: ${providerId}`, err.message);
     });
 
-    client.on('message', async (msg) => {
-      try {
-        if (msg.fromMe) return;
-        if (msg.from.endsWith('@g.us')) return;
+   client.on('message', async (msg) => {
+    //
+    try {
+    const isGroup = msg.from.endsWith('@g.us');
 
-        const phone = msg.from.replace('@c.us', '');
-        const backendUrl = process.env['BACKEND_URL'] ?? 'http://localhost:3000';
-        const botSecret = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
+    if (!isGroup) {
+      return;
+    }
 
-        console.log(`[WhatsApp] Message from ${phone}: ${msg.body}`);
-
-        const { data } = await axios.post<{ link: string }>(
-          `${backendUrl}/bot/magic-link`,
-          { phoneNumber: phone, providerId },
-          { headers: { 'x-bot-secret': botSecret } },
-        );
-
-        //ola! Aqui tienes tu enlace de acceso:\n\n${data.link}\n\nEste enlace es valido por 30 minutos.
-        await msg.reply(
-          data.link,
-        );
-        console.log(`[WhatsApp] Magic link sent to ${phone}`);
-      } catch (err) {
-        console.error(`[WhatsApp] Error handling message:`, err);
-        try {
-          await msg.reply('Lo siento, hubo un error al procesar tu solicitud. Intenta de nuevo.');
-        } catch { /* ignore */ }
-      }
+    console.dir(msg, {
+        depth: null,
+        colors: true
     });
+    const newDescription = msg.body.startsWith('!desc ')
+      ? msg.body.slice(6).trim()
+      : msg.body.trim();
+
+    const id_usuario = msg.author || '';
+    const id_usuario2 = msg.id || '';
+
+    console.log(
+      `Nuevo mensaje del grupo ${msg.from}: ${newDescription} - Autor: ${id_usuario} - FromMe: ${id_usuario2}`,
+    );
+  } catch (error) {
+    console.error('[WhatsApp] Error procesando mensaje:', error);
+  }
+  
+  
+  });
+
 
     try {
       await initializeWithRetry(client);
@@ -313,11 +314,14 @@ export async function sendMessage(
   }
 
   try {
+
     await instance.client.sendMessage(recipient, message);
     console.log(`[WhatsApp] Message sent: ${providerId} -> ${recipient}`);
     return true;
-  } catch (error) {
-    console.error(`[WhatsApp] Failed to send message: ${providerId}`, error);
-    return false;
-  }
+    } catch (error) {
+      // Log full error including stack to help diagnose puppeteer/context errors
+      const details = error instanceof Error ? error.stack ?? error.message : String(error);
+      console.error(`[WhatsApp] Failed to send message: ${providerId} ${recipient}`, details);
+      return false;
+    }
 }

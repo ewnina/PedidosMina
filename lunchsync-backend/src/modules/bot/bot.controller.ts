@@ -35,9 +35,17 @@ export class BotController {
       throw new UnauthorizedException('Invalid bot secret');
     }
 
-    const user = await this.users.findOrCreateByPhone(body.phoneNumber);
+    const existingUser = await this.users.findByPhone(body.phoneNumber);
+    const userExists = !!existingUser;
+
+    let userId = existingUser?.id;
+    if (!userExists) {
+      const pendingUser = await this.users.createPendingUser(body.phoneNumber);
+      userId = pendingUser.id;
+    }
+
     const { token, jti } = await this.auth.generateMagicLink({
-      userId: user.id,
+      userId: userId!,
       providerId: body.providerId,
     });
 
@@ -45,6 +53,6 @@ export class BotController {
     const baseUrl = process.env['FRONTEND_URL'] ?? `http://${LOCAL_IP}:${frontendPort}`;
     const link = `${baseUrl}/employee/auth?token=${token}&jti=${jti}`;
 
-    return { link, userId: user.id, phoneNumber: body.phoneNumber };
+    return { link, userId, phoneNumber: body.phoneNumber, userExists };
   }
 }

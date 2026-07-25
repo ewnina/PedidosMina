@@ -6,13 +6,15 @@ export class MessageFactory {
     serviceName: string;
     totalAmount: number;
     specialInstructions?: string;
+    deliveryZoneName: string;
   }): string {
     let msg = `🍽️ *Nuevo Pedido*\n\n`;
     msg += `📋 #${data.orderNumber}\n`;
     msg += `👤 ${data.employeeName}\n`;
     msg += `📞 ${data.employeePhone}\n`;
     msg += `🥗 ${data.serviceName}\n`;
-    msg += `💰 $${data.totalAmount.toFixed(2)}\n`;
+    msg += `📍 ${data.deliveryZoneName}\n`;
+    msg += `💰 $${Number(data.totalAmount).toFixed(2)}\n`;
 
     if (data.specialInstructions) {
       msg += `\n📝 *Instrucciones:* ${data.specialInstructions}`;

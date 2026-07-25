@@ -226,7 +226,7 @@ export function MenusPage(): React.JSX.Element {
                   <div className="flex-1">
                     <h3 className="text-[17px] font-semibold">{service.name}</h3>
                     {service.description && <p className="text-[13px] text-[var(--c-text-secondary)] mt-1">{service.description}</p>}
-                    <p className="text-[15px] font-medium text-[var(--c-accent)] mt-1">${service.basePrice.toFixed(2)}</p>
+                    <p className="text-[15px] font-medium text-[var(--c-accent)] mt-1">${Number(service.basePrice).toFixed(2)}</p>
                     <div className="flex gap-2 mt-2">
                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${service.isAvailable ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-[#FF3B30]/10 text-[#FF3B30]'}`}>
                         {service.isAvailable ? 'Disponible' : 'No disponible'}
@@ -302,7 +302,7 @@ export function MenusPage(): React.JSX.Element {
                   <div className="flex-1">
                     <h3 className="text-[17px] font-semibold">{option.optionName}</h3>
                     <p className="text-[15px] font-medium text-[var(--c-accent)] mt-1">
-                      {option.extraPrice > 0 ? `+$${option.extraPrice.toFixed(2)}` : 'Sin costo extra'}
+                      {Number(option.extraPrice) > 0 ? `+$${Number(option.extraPrice).toFixed(2)}` : 'Sin costo extra'}
                     </p>
                     <div className="flex gap-2 mt-2">
                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${option.isAvailable ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-[#FF3B30]/10 text-[#FF3B30]'}`}>

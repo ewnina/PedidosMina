@@ -13,7 +13,7 @@ export interface Order {
   employeePhone: string;
   providerName: string;
   deliveryZoneName: string;
-  totalAmount: number;
+  totalAmount: number | string;
   orderStatus: string;
   paymentStatus: string;
   specialInstructions: string | null;

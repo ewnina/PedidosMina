@@ -26,12 +26,13 @@ export class OrdersService {
     employeeName: string,
     employeePhone: string,
     providerName: string,
+    serviceName: string,
   ): Promise<string> {
     const orderNumber = this.generateOrderNumber();
 
     const result = await this.dataSource.query<{ process_order_with_stock_check: string }[]>(
       `SELECT process_order_with_stock_check(
-        $1, $2, $3, $4, $5, $6, $7, $8, $9
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
       )`,
       [
         userId,
@@ -40,9 +41,14 @@ export class OrdersService {
         dto.deliveryZoneId,
         dto.menuServiceId,
         dto.selectedOptionIds,
-        0, // total_amount se calcula en la función
+        dto.totalAmount,
         orderNumber,
         dto.specialInstructions ?? null,
+        employeeName,
+        employeePhone,
+        providerName,
+        deliveryZoneName,
+        serviceName,
       ],
     );
 
@@ -54,7 +60,10 @@ export class OrdersService {
         orderNumber,
         employeeName,
         employeePhone,
-        totalAmount: 0,
+        totalAmount: dto.totalAmount,
+        serviceName,
+        specialInstructions: dto.specialInstructions ?? null,
+        deliveryZoneName,
       }),
     );
 
@@ -62,8 +71,11 @@ export class OrdersService {
     return orderId;
   }
 
-  async findAll(providerId: string, dailyMenuId?: string): Promise<Order[]> {
-    const where: Record<string, string> = { providerId };
+  async findAll(providerId?: string, dailyMenuId?: string): Promise<Order[]> {
+    const where: Record<string, string> = {};
+    if (providerId) {
+      where.providerId = providerId;
+    }
     if (dailyMenuId) {
       where.dailyMenuId = dailyMenuId;
     }
@@ -77,7 +89,30 @@ export class OrdersService {
     const order = await this.orderRepo.findOne({ where: { id } });
     if (!order) throw new NotFoundException('Order not found');
     order.orderStatus = status;
-    return this.orderRepo.save(order);
+    const saved = await this.orderRepo.save(order);
+
+    // Emit specific events for accepted/cancelled to notify via WhatsApp
+    if (status === 'accepted') {
+      this.eventEmitter.emit('order.accepted', {
+        orderId: saved.id,
+        providerId: saved.providerId,
+        orderNumber: saved.orderNumber,
+        employeeName: saved.employeeName,
+        employeePhone: saved.employeePhone,
+      });
+    }
+
+    if (status === 'cancelled') {
+      this.eventEmitter.emit('order.cancelled', {
+        orderId: saved.id,
+        providerId: saved.providerId,
+        orderNumber: saved.orderNumber,
+        employeeName: saved.employeeName,
+        employeePhone: saved.employeePhone,
+      });
+    }
+
+    return saved;
   }
 
   private generateOrderNumber(): string {

@@ -20,7 +20,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url ?? '';
+    const isAuthEndpoint = url.includes('/auth/');
+
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('accessToken');
       window.location.href = '/auth/login';
     }

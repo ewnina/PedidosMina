@@ -9,7 +9,7 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'whatsapp-bot' });
 });
 
-const PORT = process.env['PORT'] ?? 3001;
+const PORT = process.env['PORT'] ?? 3001; // Restaurando el puerto original
 
 app.listen(PORT, () => {
   console.log(`[WhatsApp Bot] Service running on port ${PORT}`);
