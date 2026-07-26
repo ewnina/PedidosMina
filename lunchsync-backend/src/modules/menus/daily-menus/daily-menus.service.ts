@@ -36,4 +36,18 @@ export class DailyMenusService {
     menu.publishedAt = new Date();
     return this.menuRepo.save(menu);
   }
+
+  async deactivate(id: string): Promise<DailyMenu> {
+    const menu = await this.menuRepo.findOne({ where: { id } });
+    if (!menu) throw new NotFoundException('Menu not found');
+    menu.isActive = false;
+    return this.menuRepo.save(menu);
+  }
+
+   async activate(id: string): Promise<DailyMenu> {
+    const menu = await this.menuRepo.findOne({ where: { id } });
+    if (!menu) throw new NotFoundException('Menu not found');
+    menu.isActive = true;
+    return this.menuRepo.save(menu);
+  }
 }

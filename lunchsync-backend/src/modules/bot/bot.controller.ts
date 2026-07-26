@@ -1,4 +1,5 @@
 import { Controller, Post, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import os from 'os';
 import { UsersService } from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
@@ -27,6 +28,7 @@ export class BotController {
   ) {}
 
   @Post('magic-link')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   async generateMagicLink(
     @Body() body: { author: string; whatsappGroupId: string; providerId: string },
     @Headers('x-bot-secret') secret: string,

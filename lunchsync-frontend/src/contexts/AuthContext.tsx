@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { User } from '../types';
 
 interface AuthContextType {
@@ -15,6 +15,12 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('accessToken'));
 
+  const logout = useCallback(() => {
+    localStorage.removeItem('accessToken');
+    setToken(null);
+    setUser(null);
+  }, []);
+
   useEffect(() => {
     if (token) {
       try {
@@ -30,17 +36,17 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
         logout();
       }
     }
-  }, [token]);
+  }, [token, logout]);
+
+  useEffect(() => {
+    const handleUnauthorized = () => logout();
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, [logout]);
 
   const login = (newToken: string) => {
     localStorage.setItem('accessToken', newToken);
     setToken(newToken);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('accessToken');
-    setToken(null);
-    setUser(null);
   };
 
   return (

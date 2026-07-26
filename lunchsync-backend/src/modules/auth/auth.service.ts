@@ -194,4 +194,38 @@ export class AuthService {
       accessToken: this.jwtService.sign(payload),
     };
   }
+
+  async refreshToken(accessToken: string): Promise<{ accessToken: string }> {
+    try {
+      const decoded = this.jwtService.verify(accessToken, { ignoreExpiration: true });
+      if (!decoded.sub) {
+        throw new UnauthorizedException('Token inválido');
+      }
+
+      // Check the token hasn't been expired for more than 5 minutes (grace period)
+      const expiredFor = Date.now() - (decoded.exp as number) * 1000;
+      if (expiredFor > 5 * 60 * 1000) {
+        throw new UnauthorizedException('Token expirado');
+      }
+
+      const user = await this.userRepo.findOne({ where: { id: decoded.sub } });
+      if (!user) {
+        throw new UnauthorizedException('Usuario no encontrado');
+      }
+
+      const payload = {
+        sub: user.id,
+        email: user.whatsappLid ?? user.phoneNumber ?? user.id,
+        role: decoded.role,
+        providerId: decoded.providerId,
+      };
+
+      return {
+        accessToken: this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
+      throw new UnauthorizedException('Token inválido');
+    }
+  }
 }

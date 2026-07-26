@@ -11,7 +11,7 @@ import { IosModal } from '../../../components/ui/IosModal';
 type ViewLevel = 'menus' | 'services' | 'groups' | 'options';
 
 export function MenusPage(): React.JSX.Element {
-  const { menus, loading, createMenu, publishMenu } = useMenus();
+  const { menus, loading, createMenu, publishMenu, deactivateMenu, activateMenu } = useMenus();
   const [view, setView] = useState<ViewLevel>('menus');
   const [selectedMenu, setSelectedMenu] = useState<DailyMenu | null>(null);
   const [selectedService, setSelectedService] = useState<MenuServiceItem | null>(null);
@@ -195,14 +195,32 @@ export function MenusPage(): React.JSX.Element {
                       Corte: {new Date(menu.orderCutoffTime).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                     <div className="flex gap-2 mt-2">
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${menu.publishedAt ? 'bg-[#34C759]/10 text-[#34C759]' : 'bg-[#FF9500]/10 text-[#FF9500]'}`}>
-                        {menu.publishedAt ? 'Publicado' : 'Borrador'}
-                      </span>
+                      {!menu.isActive ? (
+                        <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[#FF3B30]/10 text-[#FF3B30]">
+                          Desactivado
+                        </span>
+                      ) : menu.publishedAt ? (
+                        <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[#34C759]/10 text-[#34C759]">
+                          Publicado
+                        </span>
+                      ) : (
+                        <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-[#FF9500]/10 text-[#FF9500]">
+                          Borrador
+                        </span>
+                      )}
                     </div>
                   </div>
-                  {!menu.publishedAt && (
-                    <IosButton size="small" onClick={(e) => { e.stopPropagation(); void publishMenu(menu.id); }}>Publicar</IosButton>
-                  )}
+                  <div className="flex gap-2">
+                    {!menu.publishedAt && (
+                      <IosButton size="small" onClick={(e) => { e.stopPropagation(); void publishMenu(menu.id); }}>Publicar</IosButton>
+                    )}
+                    {menu.publishedAt && menu.isActive && (
+                      <IosButton size="small" variant="secondary" onClick={(e) => { e.stopPropagation(); void deactivateMenu(menu.id); }}>Desactivar</IosButton>
+                    )}
+                    {menu.publishedAt && !menu.isActive && (
+                      <IosButton size="small" variant="secondary" onClick={(e) => { e.stopPropagation(); void activateMenu(menu.id); }}>Activar</IosButton>
+                    )}
+                  </div>
                 </div>
               </IosCard>
             ))}

@@ -11,6 +11,7 @@ import { ProviderLayout } from './components/provider/ProviderLayout';
 import { ProviderDashboardPage } from './pages/provider/ProviderDashboardPage';
 import { MenusPage } from './pages/provider/menus/MenusPage';
 import { OrdersPage } from './pages/provider/orders/OrdersPage';
+import { ConciliationPage } from './pages/provider/orders/ConciliationPage';
 import { WhatsAppPage } from './pages/provider/whatsapp/WhatsAppPage';
 import { ZonesPage } from './pages/provider/zones/ZonesPage';
 import { EmployeeAuthPage } from './pages/employee/EmployeeAuthPage';
@@ -71,6 +72,7 @@ function AppRoutes(): React.JSX.Element {
         <Route path="dashboard" element={<ProviderDashboardPage />} />
         <Route path="menus" element={<MenusPage />} />
         <Route path="orders" element={<OrdersPage />} />
+        <Route path="conciliation" element={<ConciliationPage />} />
         <Route path="whatsapp" element={<WhatsAppPage />} />
         <Route path="zones" element={<ZonesPage />} />
       </Route>

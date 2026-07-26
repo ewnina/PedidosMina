@@ -14,6 +14,7 @@ import { OrderItem } from '../modules/orders/items/entities/order-item.entity';
 import { OrderItemSelection } from '../modules/orders/selections/entities/order-item-selection.entity';
 import { AuditLog } from '../modules/audit/entities/audit-log.entity';
 import { WhatsappLog } from '../modules/whatsapp/entities/whatsapp-log.entity';
+import { Payment } from '../modules/payments/entities/payment.entity';
 
 export const entities = [
   Provider,
@@ -32,4 +33,5 @@ export const entities = [
   OrderItemSelection,
   AuditLog,
   WhatsappLog,
+  Payment,
 ];

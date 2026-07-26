@@ -55,5 +55,19 @@ export function useMenus() {
     );
   };
 
-  return { menus, loading, createMenu, publishMenu, refetch: fetchMenus };
+  const deactivateMenu = async (id: string) => {
+    await api.patch(`/daily-menus/${id}/deactivate`);
+    setMenus((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, isActive: false } : m)),
+    );
+  };
+
+  const activateMenu = async (id: string) => {
+    await api.patch(`/daily-menus/${id}/activate`);
+    setMenus((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, isActive: true } : m)),
+    );
+  };
+
+  return { menus, loading, createMenu, publishMenu, deactivateMenu, activateMenu, refetch: fetchMenus };
 }

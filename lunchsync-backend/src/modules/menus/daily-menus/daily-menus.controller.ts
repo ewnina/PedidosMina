@@ -23,4 +23,14 @@ export class DailyMenusController {
   publish(@Param('id') id: string) {
     return this.menusService.publish(id);
   }
+
+  @Patch(':id/deactivate')
+  deactivate(@Param('id') id: string) {
+    return this.menusService.deactivate(id);
+  }
+
+  @Patch(':id/activate')
+  activate(@Param('id') id: string) {
+    return this.menusService.activate(id);
+  }
 }

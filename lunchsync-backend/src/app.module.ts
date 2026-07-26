@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { LoggerModule } from 'nestjs-pino';
+import { APP_GUARD } from '@nestjs/core';
 import databaseConfig from './config/database.config';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -18,6 +21,7 @@ import { UsersModule } from './modules/users/users.module';
 import { BotModule } from './modules/bot/bot.module';
 import { EmployeeModule } from './modules/employee/employee.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -33,6 +37,22 @@ import { AppService } from './app.service';
       useFactory: (config: ConfigService) => config.get('database')!,
     }),
     EventEmitterModule.forRoot(),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100,
+    }]),
+    LoggerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        pinoHttp: {
+          level: config.get('LOG_LEVEL') ?? 'info',
+          transport: config.get('NODE_ENV') !== 'production'
+            ? { target: 'pino-pretty', options: { colorize: true, singleLine: true } }
+            : undefined,
+        },
+      }),
+    }),
     RealtimeModule,
     AuthModule,
     OrdersModule,
@@ -48,8 +68,12 @@ import { AppService } from './app.service';
     BotModule,
     EmployeeModule,
     AuditModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}

@@ -65,8 +65,8 @@ export function EmployeeMenuPage(): React.JSX.Element {
           api.get<TodayMenu>('/employee/today-menu'),
           api.get<DeliveryZone[]>('/employee/delivery-zones'),
         ]);
-        setMenu(menuRes.data);
-        setZones(zonesRes.data);
+        setMenu(menuRes.data ?? null);
+        setZones(zonesRes.data ?? []);
       } catch {
         setError('No hay menú disponible hoy.');
       } finally {
@@ -76,7 +76,7 @@ export function EmployeeMenuPage(): React.JSX.Element {
     void load();
   }, []);
 
-  const selectedService = menu?.services.find((s) => s.id === selectedServiceId) ?? null;
+  const selectedService = (menu?.services ?? []).find((s) => s.id === selectedServiceId) ?? null;
 
   const handleGroupSelection = (groupId: string, optionId: string, maxSelect: number) => {
     setSelections((prev) => {
@@ -166,13 +166,28 @@ export function EmployeeMenuPage(): React.JSX.Element {
     return <p className="text-[#FF3B30] text-center py-8">{error}</p>;
   }
 
+  if (!menu) {
+    return (
+      <div>
+        <IosHeader title="Menu del Dia" />
+        <div className="text-center py-16">
+          <p className="text-[48px] mb-4">🍽️</p>
+          <p className="text-[17px] font-semibold text-[var(--c-text)]">Lo sentimos</p>
+          <p className="text-[15px] text-[var(--c-text-secondary)] mt-2">
+            Por hoy no hay menú disponible.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <IosHeader title="Menu del Dia" subtitle={menu ? `Fecha: ${menu.servingDate}` : ''} />
 
       {!selectedService ? (
         <div className="space-y-3 mt-4">
-          {menu?.services.map((service) => (
+          {(menu?.services ?? []).map((service) => (
             <IosCard key={service.id} onClick={() => {
               setSelectedServiceId(service.id);
               setSelections({});
@@ -195,7 +210,7 @@ export function EmployeeMenuPage(): React.JSX.Element {
               )}
             </IosCard>
           ))}
-          {menu?.services.length === 0 && (
+          {(menu?.services ?? []).length === 0 && (
             <p className="text-[var(--c-text-secondary)] text-center py-8">
               No hay servicios disponibles hoy.
             </p>

@@ -8,6 +8,7 @@ const tabs = [
   { id: 'dashboard', label: 'Inicio', icon: '🏠' },
   { id: 'menus', label: 'Menús', icon: '📋' },
   { id: 'orders', label: 'Pedidos', icon: '🛒' },
+  { id: 'conciliation', label: 'Pagos', icon: '💰' },
   { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
   { id: 'zones', label: 'Zonas', icon: '📍' },
 ];
