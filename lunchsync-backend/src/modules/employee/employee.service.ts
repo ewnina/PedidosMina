@@ -118,7 +118,7 @@ export class EmployeeService {
       providerId,
       zone.zoneName,
       user.fullName,
-      user.phoneNumber,
+      user.phoneNumber ?? '',
       provider.name,
       service.name,
     );

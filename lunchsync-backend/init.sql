@@ -63,7 +63,8 @@ CREATE TABLE delivery_zones (
 -- 5. USUARIOS / EMPLEADOS
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    phone_number VARCHAR(20) NOT NULL UNIQUE,
+    whatsapp_lid VARCHAR(100) UNIQUE NULL,
+    phone_number VARCHAR(20) UNIQUE NULL,
     full_name VARCHAR(150) NOT NULL,
     employee_code VARCHAR(50) NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -231,7 +232,11 @@ CREATE OR REPLACE FUNCTION process_order_with_stock_check(
     p_selected_option_ids UUID[],
     p_total_amount DECIMAL(10, 2),
     p_order_number VARCHAR(20),
-    p_special_instructions TEXT
+    p_special_instructions TEXT,
+    p_employee_name VARCHAR(150),
+    p_employee_phone VARCHAR(20),
+    p_provider_name VARCHAR(150),
+    p_delivery_zone_name VARCHAR(100)
 ) RETURNS UUID AS $$
 DECLARE
     v_order_id UUID;
@@ -265,9 +270,11 @@ BEGIN
     -- 2. Crear la orden principal
     INSERT INTO orders (
         order_number, user_id, provider_id, daily_menu_id, delivery_zone_id,
+        employee_name, employee_phone, provider_name, delivery_zone_name,
         total_amount, order_status, payment_status, special_instructions
     ) VALUES (
         p_order_number, p_user_id, p_provider_id, p_daily_menu_id, p_delivery_zone_id,
+        p_employee_name, p_employee_phone, p_provider_name, p_delivery_zone_name,
         p_total_amount, 'pending', 'payroll_deduction', p_special_instructions
     ) RETURNING id INTO v_order_id;
 

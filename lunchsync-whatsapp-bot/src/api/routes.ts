@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import {
   startBot,
   stopBot,
@@ -13,6 +13,17 @@ import { BotStatusResponse, QrResponse } from '../types';
 const router = Router();
 
 const BOT_INTERNAL_SECRET = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
+
+function requireSecret(req: Request, res: Response, next: NextFunction): void {
+  const secret = req.headers['x-bot-secret'] as string | undefined;
+  if (secret !== BOT_INTERNAL_SECRET) {
+    res.status(401).json({ error: 'Invalid bot secret' });
+    return;
+  }
+  next();
+}
+
+router.use(requireSecret);
 
 router.get('/status/:providerId', (req: Request, res: Response) => {
   const providerId = req.params['providerId'] as string;
@@ -36,26 +47,50 @@ router.get('/status', (_req: Request, res: Response) => {
 
 router.post('/start/:providerId', async (req: Request, res: Response) => {
   const providerId = req.params['providerId'] as string;
-  const status = await startBot(providerId);
-  res.json({ providerId, status });
+  try {
+    const status = await startBot(providerId);
+    res.json({ providerId, status });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[WhatsApp] Error starting bot ${providerId}:`, msg);
+    res.status(500).json({ providerId, status: 'disconnected', error: msg });
+  }
 });
 
 router.post('/stop/:providerId', async (req: Request, res: Response) => {
   const providerId = req.params['providerId'] as string;
-  const status = await stopBot(providerId);
-  res.json({ providerId, status });
+  try {
+    const status = await stopBot(providerId);
+    res.json({ providerId, status });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[WhatsApp] Error stopping bot ${providerId}:`, msg);
+    res.status(500).json({ providerId, status: 'disconnected', error: msg });
+  }
 });
 
 router.post('/restart/:providerId', async (req: Request, res: Response) => {
   const providerId = req.params['providerId'] as string;
-  const status = await restartBot(providerId);
-  res.json({ providerId, status });
+  try {
+    const status = await restartBot(providerId);
+    res.json({ providerId, status });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[WhatsApp] Error restarting bot ${providerId}:`, msg);
+    res.status(500).json({ providerId, status: 'disconnected', error: msg });
+  }
 });
 
 router.post('/unlink/:providerId', async (req: Request, res: Response) => {
   const providerId = req.params['providerId'] as string;
-  await unlinkBot(providerId);
-  res.json({ providerId, status: 'disconnected' });
+  try {
+    await unlinkBot(providerId);
+    res.json({ providerId, status: 'disconnected' });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[WhatsApp] Error unlinking bot ${providerId}:`, msg);
+    res.status(500).json({ providerId, status: 'disconnected', error: msg });
+  }
 });
 
 router.get('/qr/:providerId', (req: Request, res: Response) => {
@@ -70,45 +105,47 @@ router.get('/qr/:providerId', (req: Request, res: Response) => {
 
 router.post('/send', async (req: Request, res: Response) => {
   const { providerId, recipient, message } = req.body as { providerId: string; recipient: string; message: string };
-  const success = await sendMessage(providerId, recipient, message);
-  res.json({ success });
+  if (!providerId || !recipient || !message) {
+    res.status(400).json({ error: 'Missing providerId, recipient, or message' });
+    return;
+  }
+  try {
+    const success = await sendMessage(providerId, recipient, message);
+    res.json({ success });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[WhatsApp] Error sending message to ${recipient}:`, msg);
+    res.status(500).json({ success: false, error: msg });
+  }
 });
 
-// Temporary debug endpoint: attempts to send and returns error details if any.
 router.post('/send-debug', async (req: Request, res: Response) => {
-  const secret = req.headers['x-bot-secret'] as string | undefined;
-  if (secret !== BOT_INTERNAL_SECRET) return res.status(401).json({ error: 'Invalid bot secret' });
-
   const { providerId, recipient, message } = req.body as { providerId: string; recipient: string; message: string };
   const instance = getBotInstance(providerId);
-  if (!instance || instance.status !== 'connected') return res.status(400).json({ error: 'Bot not connected' });
+  if (!instance || instance.status !== 'connected') {
+    res.status(400).json({ error: 'Bot not connected' });
+    return;
+  }
 
   try {
     await instance.client.sendMessage(recipient, message);
-    return res.json({ success: true });
-  } catch (err: any) {
+    res.json({ success: true });
+  } catch (err) {
     const details = err instanceof Error ? err.stack ?? err.message : String(err);
     console.error('[WhatsApp] send-debug error:', details);
-    return res.status(500).json({ success: false, error: details });
+    res.status(500).json({ success: false, error: details });
   }
 });
 
-// Temporary secure endpoint to list chats for a provider (used to obtain group IDs)
 router.get('/chats/:providerId', async (req: Request, res: Response) => {
-  const secret = req.headers['x-bot-secret'] as string | undefined;
-  if (secret !== BOT_INTERNAL_SECRET) {
-    return res.status(401).json({ error: 'Invalid bot secret' });
-  }
-
   const providerId = req.params['providerId'] as string;
   const instance = getBotInstance(providerId);
   if (!instance || instance.status !== 'connected') {
-    return res.status(400).json({ error: 'Bot not connected for provider' });
+    res.status(400).json({ error: 'Bot not connected for provider' });
+    return;
   }
 
   try {
-    // Try the library helper first. If it fails (internal whatsapp-web.js error),
-    // fallback to evaluating a small script inside the page to extract minimal chat info.
     try {
       const chats = await instance.client.getChats();
       const out = chats.map((c: any) => ({
@@ -116,20 +153,17 @@ router.get('/chats/:providerId', async (req: Request, res: Response) => {
         name: c.name ?? c.formattedTitle ?? c.contact?.pushname ?? null,
         isGroup: Boolean(c.isGroup),
       }));
-      return res.json({ providerId, chats: out });
+      res.json({ providerId, chats: out });
     } catch (libErr) {
-      // fallback: evaluate in page context to get minimal chat list
       try {
         const page = (instance.client as any).pupPage ?? (instance.client as any).pupBrowser?.pages?.()[0];
         if (!page) throw new Error('pupPage not available');
 
         const raw = await page.evaluate(() => {
           try {
-            // Access internal Store used by whatsapp-web.js
             const S: any = (window as any).Store;
             if (!S) return [];
 
-            // Try common collections
             let list: any[] = [];
             if (S.chats && typeof S.chats.toArray === 'function') {
               list = S.chats.toArray();
@@ -149,11 +183,11 @@ router.get('/chats/:providerId', async (req: Request, res: Response) => {
           }
         });
 
-        return res.json({ providerId, chats: raw });
+        res.json({ providerId, chats: raw });
       } catch (evalErr) {
         const details = evalErr instanceof Error ? evalErr.stack ?? evalErr.message : String(evalErr);
         console.error(`[WhatsApp] Fallback listing chats failed for ${providerId}:`, details);
-        return res.status(500).json({ error: 'Failed to list chats', details });
+        res.status(500).json({ error: 'Failed to list chats', details });
       }
     }
   } catch (err) {

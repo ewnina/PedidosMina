@@ -223,35 +223,70 @@ export async function startBot(providerId: string): Promise<BotStatus> {
       console.error(`[WhatsApp] Error: ${providerId}`, err.message);
     });
 
-   client.on('message', async (msg) => {
-    //
-    try {
-    const isGroup = msg.from.endsWith('@g.us');
+    client.on('message', async (msg) => {
+      //
+      try {
+        const isGroup = msg.from.endsWith('@g.us');
 
-    if (!isGroup) {
-      return;
-    }
+        if (!isGroup) {
+          return;
+        }
 
-    console.dir(msg, {
-        depth: null,
-        colors: true
+        const body = msg.body.trim().toLowerCase();
+        const validCommands = ['!pedir', '!almuerzo', 'menu', '!ordenar'];
+
+        if (!validCommands.includes(body)) {
+          return;
+        }
+
+        const id_grupo = msg.from;
+        const id_user = msg.author;
+
+        if (!id_user) {
+          console.log(`[WhatsApp] No author found in message from group ${id_grupo}`);
+          return;
+        }
+
+        const backendUrl = process.env['BACKEND_URL'] ?? 'http://localhost:3000';
+        const botSecret = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
+
+        console.log(`[WhatsApp] Command received: ${body} from author: ${id_user} in group: ${id_grupo}`);
+
+        try {
+          const { data } = await axios.post<{ link: string; userExists: boolean }>(
+            `${backendUrl}/bot/magic-link`,
+            { author: id_user, whatsappGroupId: id_grupo, providerId },
+            { headers: { 'x-bot-secret': botSecret }, timeout: 10_000 },
+          );
+
+          // Send link PRIVATELY to the user (not in the group)
+          await sendMessage(providerId, id_user, `¡Hola! Aquí tienes tu enlace de acceso:\n\n${data.link}\n\nEste enlace es válido por 10 horas.`);
+
+          // Confirm in the group
+          const confirmationMsg = data.userExists
+            ? '✅ Se te envió un link de acceso.'
+            : '📩 Se te envió un link privado. Completa tus datos para continuar.';
+          await msg.reply(confirmationMsg);
+
+          console.log(`[WhatsApp] Magic link sent to ${id_user} for provider ${providerId}`);
+        } catch (sendError) {
+          const errDetail = axios.isAxiosError(sendError)
+            ? `HTTP ${sendError.response?.status ?? 'N/A'}: ${JSON.stringify(sendError.response?.data ?? sendError.message)}`
+            : sendError instanceof Error ? sendError.message : String(sendError);
+          console.error(`[WhatsApp] Error generating magic link for ${id_user}: ${errDetail}`);
+          try {
+            await msg.reply('⚠️ Error al procesar tu solicitud. Intenta de nuevo.');
+          } catch { /* ignore */ }
+        }
+
+      } catch (err) {
+        console.error(`[WhatsApp] Error handling message:`, err);
+      }
+
+
+
+
     });
-    const newDescription = msg.body.startsWith('!desc ')
-      ? msg.body.slice(6).trim()
-      : msg.body.trim();
-
-    const id_usuario = msg.author || '';
-    const id_usuario2 = msg.id || '';
-
-    console.log(
-      `Nuevo mensaje del grupo ${msg.from}: ${newDescription} - Autor: ${id_usuario} - FromMe: ${id_usuario2}`,
-    );
-  } catch (error) {
-    console.error('[WhatsApp] Error procesando mensaje:', error);
-  }
-  
-  
-  });
 
 
     try {
@@ -292,14 +327,13 @@ export async function restartBot(providerId: string): Promise<BotStatus> {
   return startBot(providerId);
 }
 
-export function unlinkBot(providerId: string): void {
+export async function unlinkBot(providerId: string): Promise<void> {
+  await stopBot(providerId);
   const sessionDir = getSessionDir(providerId);
-  void stopBot(providerId).then(() => {
-    if (fs.existsSync(sessionDir)) {
-      fs.rmSync(sessionDir, { recursive: true, force: true });
-      console.log(`[WhatsApp] Session deleted: ${providerId}`);
-    }
-  });
+  if (fs.existsSync(sessionDir)) {
+    fs.rmSync(sessionDir, { recursive: true, force: true });
+    console.log(`[WhatsApp] Session deleted: ${providerId}`);
+  }
 }
 
 export async function sendMessage(
@@ -314,14 +348,12 @@ export async function sendMessage(
   }
 
   try {
-
     await instance.client.sendMessage(recipient, message);
     console.log(`[WhatsApp] Message sent: ${providerId} -> ${recipient}`);
     return true;
-    } catch (error) {
-      // Log full error including stack to help diagnose puppeteer/context errors
-      const details = error instanceof Error ? error.stack ?? error.message : String(error);
-      console.error(`[WhatsApp] Failed to send message: ${providerId} ${recipient}`, details);
-      return false;
-    }
+  } catch (error) {
+    const details = error instanceof Error ? error.stack ?? error.message : String(error);
+    console.error(`[WhatsApp] Failed to send message: ${providerId} ${recipient}`, details);
+    return false;
+  }
 }

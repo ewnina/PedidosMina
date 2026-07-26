@@ -98,7 +98,7 @@ export class AuthService {
     return { token, jti };
   }
 
-  async validateMagicLink(dto: ValidateMagicLinkDto): Promise<{ accessToken: string } | { userExists: false; phoneNumber: string; providerId: string; userId: string }> {
+  async validateMagicLink(dto: ValidateMagicLinkDto): Promise<{ accessToken: string } | { userExists: false; whatsappLid: string; providerId: string; userId: string }> {
     const authToken = await this.authTokenRepo.findOne({
       where: { jti: dto.tokenJti },
     });
@@ -123,13 +123,13 @@ export class AuthService {
 
     // If user does not exist OR it's a pending placeholder user (created by bot),
     // treat as userExists: false so the frontend redirects to registration.
-    // Pending users are created with fullName like `Empleado ####` by UsersService.createPendingUser().
-    const isPendingUser = user ? /^Empleado\s\d{4}$/.test(user.fullName) : false;
+    // Pending users are created with fullName like `Empleado <LID prefix>` by UsersService.createPendingUserByLid().
+    const isPendingUser = user ? /^Empleado\s[a-z0-9]{8}$/i.test(user.fullName) : false;
 
     if (!user || isPendingUser) {
       return {
         userExists: false,
-        phoneNumber: user?.phoneNumber ?? '',
+        whatsappLid: user?.whatsappLid ?? '',
         providerId: authToken.providerId,
         userId: authToken.userId,
       };
@@ -139,7 +139,7 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
-      email: user.phoneNumber,
+      email: user.whatsappLid ?? user.phoneNumber ?? user.id,
       role: 'employee',
       providerId: authToken.providerId,
     };
@@ -178,13 +178,14 @@ export class AuthService {
     await this.userRepo.update(user.id, {
       fullName: dto.fullName,
       employeeCode: dto.employeeCode,
+      phoneNumber: dto.phoneNumber,
     });
 
     await this.authTokenRepo.update(authToken.id, { usedAt: new Date() });
 
     const payload = {
       sub: user.id,
-      email: user.phoneNumber,
+      email: user.whatsappLid ?? user.phoneNumber ?? user.id,
       role: 'employee',
       providerId: authToken.providerId,
     };

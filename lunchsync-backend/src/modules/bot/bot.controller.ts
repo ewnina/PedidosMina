@@ -28,19 +28,19 @@ export class BotController {
 
   @Post('magic-link')
   async generateMagicLink(
-    @Body() body: { phoneNumber: string; providerId: string },
+    @Body() body: { author: string; whatsappGroupId: string; providerId: string },
     @Headers('x-bot-secret') secret: string,
   ) {
     if (secret !== BOT_SECRET) {
       throw new UnauthorizedException('Invalid bot secret');
     }
 
-    const existingUser = await this.users.findByPhone(body.phoneNumber);
+    const existingUser = await this.users.findByWhatsappLid(body.author);
     const userExists = !!existingUser;
 
     let userId = existingUser?.id;
     if (!userExists) {
-      const pendingUser = await this.users.createPendingUser(body.phoneNumber);
+      const pendingUser = await this.users.createPendingUserByLid(body.author);
       userId = pendingUser.id;
     }
 
@@ -53,6 +53,6 @@ export class BotController {
     const baseUrl = process.env['FRONTEND_URL'] ?? `http://${LOCAL_IP}:${frontendPort}`;
     const link = `${baseUrl}/employee/auth?token=${token}&jti=${jti}`;
 
-    return { link, userId, phoneNumber: body.phoneNumber, userExists };
+    return { link, userId, whatsappLid: body.author, userExists };
   }
 }

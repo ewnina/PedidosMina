@@ -33,7 +33,7 @@ export class WhatsappService {
     const result = await this.sender.start(providerId);
     this.gateway.emitStatusChanged(providerId, result.status);
 
-    if (result.status === 'waiting_qr') {
+    if (result.status === 'waiting_qr' || result.status === 'starting') {
       this.startQrPolling(providerId);
     }
 
@@ -52,7 +52,7 @@ export class WhatsappService {
     const result = await this.sender.restart(providerId);
     this.gateway.emitStatusChanged(providerId, result.status);
 
-    if (result.status === 'waiting_qr') {
+    if (result.status === 'waiting_qr' || result.status === 'starting') {
       this.startQrPolling(providerId);
     }
 
@@ -128,6 +128,11 @@ export class WhatsappService {
 
         if (bot.status !== 'waiting_qr' && bot.status !== 'starting') {
           this.logger.log(`[QR Poll] Bot ${providerId} is now ${bot.status}, stopping poll`);
+          this.gateway.emitStatusChanged(providerId, bot.status);
+          if (bot.status === 'connected') {
+            this.gateway.emitConnected(providerId);
+          }
+          this.polling.delete(providerId);
           return;
         }
 
@@ -138,6 +143,8 @@ export class WhatsappService {
         }
       } catch (err) {
         this.logger.warn(`[QR Poll] Error polling QR for ${providerId}: ${err}`);
+        this.polling.delete(providerId);
+        return;
       }
 
       this.polling.set(providerId, setTimeout(poll, 3000));
@@ -163,5 +170,24 @@ export class WhatsappService {
     }
     await this.providerBotRepo.save(bot);
     return { success: true };
+  }
+
+  // Send a raw text message to a recipient (group or phone) for a provider and log it
+  async sendRawMessage(providerId: string, recipient: string, message: string): Promise<boolean> {
+    const success = await this.sender.sendMessage(providerId, recipient, message);
+
+    const log = this.whatsappLogRepo.create({
+      providerId,
+      orderId: null,
+      recipientPhoneOrGroup: recipient,
+      messageType: 'raw_message',
+      messagePayload: message,
+      status: success ? 'sent' : 'failed',
+      attempts: 1,
+    });
+    await this.whatsappLogRepo.save(log);
+
+    if (success) this.gateway.emitMessageSent(providerId, recipient);
+    return success;
   }
 }

@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
 import { WhatsappService } from './whatsapp.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TenantIsolationGuard } from '../auth/guards/tenant-isolation.guard';
 
 @Controller('providers/:providerId/whatsapp')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantIsolationGuard)
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 

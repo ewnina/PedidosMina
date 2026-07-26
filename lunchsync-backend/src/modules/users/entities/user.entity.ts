@@ -5,8 +5,11 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'varchar', length: 20, name: 'phone_number', unique: true })
-  phoneNumber!: string;
+  @Column({ type: 'varchar', length: 100, name: 'whatsapp_lid', unique: true, nullable: true })
+  whatsappLid!: string | null;
+
+  @Column({ type: 'varchar', length: 20, name: 'phone_number', unique: true, nullable: true })
+  phoneNumber!: string | null;
 
   @Column({ type: 'varchar', length: 150, name: 'full_name' })
   fullName!: string;

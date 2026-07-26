@@ -10,17 +10,18 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
+  async findByWhatsappLid(lid: string): Promise<User | null> {
+    return this.userRepo.findOne({ where: { whatsappLid: lid } });
+  }
+
   async findByPhone(phoneNumber: string): Promise<User | null> {
     return this.userRepo.findOne({ where: { phoneNumber } });
   }
 
-  async findOrCreateByPhone(phoneNumber: string, fullName?: string): Promise<User> {
-    let user = await this.findByPhone(phoneNumber);
-    if (user) return user;
-
-    user = this.userRepo.create({
-      phoneNumber,
-      fullName: fullName ?? `Empleado ${phoneNumber.slice(-4)}`,
+  async createPendingUserByLid(lid: string): Promise<User> {
+    const user = this.userRepo.create({
+      whatsappLid: lid,
+      fullName: `Empleado ${lid.slice(0, 8)}`,
     });
     return this.userRepo.save(user);
   }
@@ -33,10 +34,11 @@ export class UsersService {
     return this.userRepo.save(user);
   }
 
-  async updateProfile(userId: string, data: { fullName: string; employeeCode?: string }): Promise<User> {
+  async updateProfile(userId: string, data: { fullName: string; employeeCode?: string; phoneNumber?: string }): Promise<User> {
     await this.userRepo.update(userId, {
       fullName: data.fullName,
       employeeCode: data.employeeCode,
+      phoneNumber: data.phoneNumber,
     });
     return this.userRepo.findOne({ where: { id: userId } }) as Promise<User>;
   }

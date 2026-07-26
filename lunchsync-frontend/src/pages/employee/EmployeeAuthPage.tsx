@@ -34,7 +34,7 @@ export function EmployeeAuthPage(): React.JSX.Element {
         }
 
         if (data.userExists === false) {
-          navigate(`/employee/register?jti=${jti}`, { replace: true });
+          navigate(`/employee/register?jti=${jti}&lid=${encodeURIComponent(data.whatsappLid)}`, { replace: true });
           return;
         }
 

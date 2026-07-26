@@ -17,6 +17,7 @@ import { DeliveryZonesModule } from './modules/delivery-zones/delivery-zones.mod
 import { UsersModule } from './modules/users/users.module';
 import { BotModule } from './modules/bot/bot.module';
 import { EmployeeModule } from './modules/employee/employee.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -46,6 +47,7 @@ import { AppService } from './app.service';
     UsersModule,
     BotModule,
     EmployeeModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [AppService],

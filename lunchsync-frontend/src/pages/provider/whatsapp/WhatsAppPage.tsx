@@ -79,7 +79,7 @@ export function WhatsAppPage(): React.JSX.Element {
           if (data.qrCode) {
             setQrCode(data.qrCode);
           }
-          if (botStatus?.status === 'waiting_qr') {
+          if (botStatus?.status === 'waiting_qr' || botStatus?.status === 'starting') {
             const statusRes = await api.get<BotStatus>(`/providers/${user.providerId}/whatsapp/status`);
             setBotStatus(statusRes.data);
           }

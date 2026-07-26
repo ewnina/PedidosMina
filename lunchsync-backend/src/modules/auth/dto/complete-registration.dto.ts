@@ -11,4 +11,8 @@ export class CompleteRegistrationDto {
   @IsOptional()
   @IsString()
   employeeCode?: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
 }

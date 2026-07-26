@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderCreatedEvent } from '../events/order-created.event';
 import { WhatsappService } from '../../whatsapp/whatsapp.service';
+import { MessageFactory } from '../../whatsapp/message-factory';
 import { ProviderBot } from '../../provider-bots/entities/provider-bot.entity';
 
 @Injectable()
@@ -50,5 +51,57 @@ export class OrderWhatsAppListener {
         deliveryZoneName: event.orderData.deliveryZoneName,
       },
     );
+  }
+
+  @OnEvent('order.accepted')
+  async handleOrderAccepted(payload: {
+    orderId: string;
+    providerId: string;
+    orderNumber: string;
+    employeeName: string;
+    employeePhone: string;
+  }): Promise<void> {
+    this.logger.log(`WhatsApp notification for accepted order ${payload.orderNumber}`);
+
+    const status = await this.whatsappService.getStatus(payload.providerId);
+    if (status.status !== 'connected') {
+      this.logger.warn(`Bot not connected for provider ${payload.providerId} (status: ${status.status})`);
+      return;
+    }
+
+    const bot = await this.providerBotRepo.findOne({ where: { providerId: payload.providerId } });
+    if (!bot || !bot.whatsappGroupId) {
+      this.logger.warn(`No WhatsApp group configured for provider ${payload.providerId}`);
+      return;
+    }
+
+    const message = MessageFactory.orderAccepted({ orderNumber: payload.orderNumber, employeeName: payload.employeeName });
+    await this.whatsappService.sendRawMessage(payload.providerId, bot.whatsappGroupId, message);
+  }
+
+  @OnEvent('order.cancelled')
+  async handleOrderCancelled(payload: {
+    orderId: string;
+    providerId: string;
+    orderNumber: string;
+    employeeName: string;
+    employeePhone: string;
+  }): Promise<void> {
+    this.logger.log(`WhatsApp notification for cancelled order ${payload.orderNumber}`);
+
+    const status = await this.whatsappService.getStatus(payload.providerId);
+    if (status.status !== 'connected') {
+      this.logger.warn(`Bot not connected for provider ${payload.providerId} (status: ${status.status})`);
+      return;
+    }
+
+    const bot = await this.providerBotRepo.findOne({ where: { providerId: payload.providerId } });
+    if (!bot || !bot.whatsappGroupId) {
+      this.logger.warn(`No WhatsApp group configured for provider ${payload.providerId}`);
+      return;
+    }
+
+    const message = MessageFactory.orderCancelled({ orderNumber: payload.orderNumber, employeeName: payload.employeeName });
+    await this.whatsappService.sendRawMessage(payload.providerId, bot.whatsappGroupId, message);
   }
 }

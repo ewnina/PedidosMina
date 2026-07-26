@@ -10,8 +10,10 @@ export function EmployeeRegisterPage(): React.JSX.Element {
   const { login } = useAuth();
 
   const jti = searchParams.get('jti');
+  const whatsappLid = searchParams.get('lid');
   const [fullName, setFullName] = useState('');
   const [employeeCode, setEmployeeCode] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,6 +37,7 @@ export function EmployeeRegisterPage(): React.JSX.Element {
         tokenJti: jti,
         fullName: fullName.trim(),
         employeeCode: employeeCode.trim() || undefined,
+        phoneNumber: phoneNumber.trim() || undefined,
       });
       login(data.accessToken);
       navigate('/employee', { replace: true });
@@ -55,6 +58,11 @@ export function EmployeeRegisterPage(): React.JSX.Element {
           <p className="text-[15px] text-[var(--c-text-secondary)] mt-2">
             Completa tus datos para continuar
           </p>
+          {whatsappLid && (
+            <p className="text-[12px] text-[var(--c-text-secondary)] mt-1 opacity-60">
+              ID de WhatsApp detectado
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -68,6 +76,19 @@ export function EmployeeRegisterPage(): React.JSX.Element {
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Tu nombre"
               required
+              className="w-full px-4 py-3 rounded-xl bg-[var(--c-card)] border border-[var(--c-separator)] text-[var(--c-text)] text-[15px] placeholder:text-[var(--c-text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]/30"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[13px] font-medium text-[var(--c-text-secondary)] mb-1.5">
+              Telefono (opcional)
+            </label>
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="Ej: 1123456789"
               className="w-full px-4 py-3 rounded-xl bg-[var(--c-card)] border border-[var(--c-separator)] text-[var(--c-text)] text-[15px] placeholder:text-[var(--c-text-secondary)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--c-accent)]/30"
             />
           </div>

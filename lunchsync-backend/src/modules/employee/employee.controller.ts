@@ -1,16 +1,12 @@
 import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TenantIsolationGuard } from '../auth/guards/tenant-isolation.guard';
 import { CreateOrderDto } from '../orders/dto/create-order.dto';
-
-interface JwtUser {
-  userId: string;
-  providerId: string;
-  role: string;
-}
+import type { JwtUser } from '../auth/guards/tenant-isolation.guard';
 
 @Controller('employee')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantIsolationGuard)
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 

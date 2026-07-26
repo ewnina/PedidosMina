@@ -2,15 +2,17 @@ import { Controller, Get, Post, Patch, Param, Body, UseGuards, Req, Query } from
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TenantIsolationGuard } from '../auth/guards/tenant-isolation.guard';
+import type { JwtUser } from '../auth/guards/tenant-isolation.guard';
 
 @Controller('orders')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantIsolationGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
   create(
-    @Req() req: { user: { userId: string; providerId: string } },
+    @Req() req: { user: JwtUser },
     @Body() body: CreateOrderDto & { employeeName: string; employeePhone: string; providerName: string; serviceName: string },
   ) {
     return this.ordersService.createOrder(
@@ -26,7 +28,7 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(@Req() req: { user: { providerId: string; role: string } }, @Query('dailyMenuId') dailyMenuId?: string) {
+  findAll(@Req() req: { user: JwtUser }, @Query('dailyMenuId') dailyMenuId?: string) {
     const providerId = req.user.role === 'superuser' ? undefined : req.user.providerId;
     return this.ordersService.findAll(providerId, dailyMenuId);
   }
