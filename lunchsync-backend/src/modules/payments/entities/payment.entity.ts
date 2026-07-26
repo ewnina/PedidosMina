@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, Jo
 import { Order } from '../../orders/entities/order.entity';
 import { Provider } from '../../providers/entities/provider.entity';
 import { User } from '../../users/entities/user.entity';
-import { ProviderAccount } from '../../provider-accounts/entities/provider-account.entity';
 
 @Entity('payments')
 export class Payment {
@@ -50,10 +49,6 @@ export class Payment {
 
   @Column({ type: 'uuid', name: 'confirmed_by', nullable: true })
   confirmedBy!: string | null;
-
-  @ManyToOne(() => ProviderAccount, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'confirmed_by' })
-  confirmedByAccount!: ProviderAccount | null;
 
   @Column({ type: 'timestamptz', name: 'confirmed_at', nullable: true })
   confirmedAt!: Date | null;

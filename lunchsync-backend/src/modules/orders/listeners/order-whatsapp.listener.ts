@@ -49,6 +49,7 @@ export class OrderWhatsAppListener {
         totalAmount: event.orderData.totalAmount,
         specialInstructions: event.orderData.specialInstructions ?? undefined,
         deliveryZoneName: event.orderData.deliveryZoneName,
+        items: event.orderData.items,
       },
     );
   }

@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Order } from '../../entities/order.entity';
 import { MenuService } from '../../../menus/menu-services/entities/menu-service.entity';
+import { OrderItemSelection } from '../../selections/entities/order-item-selection.entity';
 
 @Entity('order_items')
 export class OrderItem {
@@ -38,4 +39,7 @@ export class OrderItem {
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
+
+  @OneToMany(() => OrderItemSelection, (sel) => sel.orderItem)
+  selections?: OrderItemSelection[];
 }

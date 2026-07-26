@@ -2,6 +2,27 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '../../lib/api';
 import { connectOrderSocket } from '../../lib/socket';
 
+export interface OrderItemSelection {
+  id: string;
+  orderItemId: string;
+  comboGroupId: string;
+  comboOptionId: string;
+  groupName: string;
+  optionName: string;
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  menuServiceId: string;
+  serviceName: string;
+  serviceDescription: string | null;
+  quantity: number;
+  unitPrice: number | string;
+  subtotal: number | string;
+  selections: OrderItemSelection[];
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -19,6 +40,7 @@ export interface Order {
   specialInstructions: string | null;
   confirmedAt: string | null;
   createdAt: string;
+  items?: OrderItem[];
 }
 
 export function useOrders(providerId?: string) {

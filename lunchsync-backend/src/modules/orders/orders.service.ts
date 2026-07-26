@@ -54,6 +54,29 @@ export class OrdersService {
 
     const orderId = result[0]!.process_order_with_stock_check;
 
+    const itemRows = await this.dataSource.query<{ service_name: string; quantity: number; unit_price: string; subtotal: string }[]>(
+      `SELECT service_name, quantity, unit_price::text, subtotal::text FROM order_items WHERE order_id = $1`,
+      [orderId],
+    );
+
+    const items = await Promise.all(
+      itemRows.map(async (row) => {
+        const selections = await this.dataSource.query<{ group_name: string; option_name: string }[]>(
+          `SELECT group_name, option_name FROM order_item_selections ois
+           JOIN order_items oi ON ois.order_item_id = oi.id
+           WHERE oi.order_id = $1 AND oi.service_name = $2`,
+          [orderId, row.service_name],
+        );
+        return {
+          serviceName: row.service_name,
+          quantity: row.quantity,
+          unitPrice: Number(row.unit_price),
+          subtotal: Number(row.subtotal),
+          selections: selections.map((s) => ({ groupName: s.group_name, optionName: s.option_name })),
+        };
+      }),
+    );
+
     this.eventEmitter.emit(
       'order.created',
       new OrderCreatedEvent(orderId, providerId, dto.dailyMenuId, {
@@ -64,6 +87,7 @@ export class OrdersService {
         serviceName,
         specialInstructions: dto.specialInstructions ?? null,
         deliveryZoneName,
+        items,
       }),
     );
 
@@ -81,6 +105,7 @@ export class OrdersService {
     }
     return this.orderRepo.find({
       where,
+      relations: { items: { selections: true } },
       order: { createdAt: 'DESC' },
     });
   }

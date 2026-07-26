@@ -123,6 +123,7 @@ describe('OrdersService', () => {
       expect(result).toHaveLength(1);
       expect(orderRepo.find).toHaveBeenCalledWith({
         where: {},
+        relations: { items: { selections: true } },
         order: { createdAt: 'DESC' },
       });
     });
@@ -134,6 +135,7 @@ describe('OrdersService', () => {
 
       expect(orderRepo.find).toHaveBeenCalledWith({
         where: { providerId: 'provider-uuid-1' },
+        relations: { items: { selections: true } },
         order: { createdAt: 'DESC' },
       });
     });
@@ -145,6 +147,7 @@ describe('OrdersService', () => {
 
       expect(orderRepo.find).toHaveBeenCalledWith({
         where: { dailyMenuId: 'menu-uuid-1' },
+        relations: { items: { selections: true } },
         order: { createdAt: 'DESC' },
       });
     });

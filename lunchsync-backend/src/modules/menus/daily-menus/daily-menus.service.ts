@@ -50,4 +50,10 @@ export class DailyMenusService {
     menu.isActive = true;
     return this.menuRepo.save(menu);
   }
+
+  async remove(id: string): Promise<void> {
+    const menu = await this.menuRepo.findOne({ where: { id } });
+    if (!menu) throw new NotFoundException('Menu not found');
+    await this.menuRepo.remove(menu);
+  }
 }

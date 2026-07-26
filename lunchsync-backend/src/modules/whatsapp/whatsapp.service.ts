@@ -78,6 +78,7 @@ export class WhatsappService {
       specialInstructions?: string;
       orderId: string;
       deliveryZoneName: string;
+      items?: { serviceName: string; quantity: number; unitPrice: number; subtotal: number; selections: { groupName: string; optionName: string }[] }[];
     },
   ): Promise<boolean> {
     const message = MessageFactory.newOrderNotification(data);

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useOrders, type Order } from '../../../hooks/provider/useOrders';
+import { useOrders, type Order, type OrderItem } from '../../../hooks/provider/useOrders';
 import { useAuth } from '../../../contexts/AuthContext';
 import { api } from '../../../lib/api';
 import { IosCard } from '../../../components/ui/IosCard';
@@ -150,6 +150,28 @@ export function OrdersPage(): React.JSX.Element {
                   <p className="text-[13px] text-[#FF9500] bg-[#FF9500]/5 p-2 rounded-lg mb-2">
                     📝 {order.specialInstructions}
                   </p>
+                )}
+
+                {order.items && order.items.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {order.items.map((item: OrderItem) => (
+                      <div key={item.id} className="bg-[var(--c-bg-input)] rounded-lg p-2.5">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[13px] font-medium">{item.serviceName}</span>
+                          <span className="text-[13px] text-[var(--c-text-secondary)]">x{item.quantity} · ${Number(item.subtotal).toFixed(2)}</span>
+                        </div>
+                        {item.selections && item.selections.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {item.selections.map((sel) => (
+                              <span key={sel.id} className="text-[11px] px-1.5 py-0.5 rounded-full bg-[var(--c-bg-card)] text-[var(--c-text-secondary)]">
+                                {sel.groupName}: {sel.optionName}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 )}
 
                 {order.orderStatus === 'pending' && (

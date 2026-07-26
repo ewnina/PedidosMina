@@ -69,5 +69,10 @@ export function useMenus() {
     );
   };
 
-  return { menus, loading, createMenu, publishMenu, deactivateMenu, activateMenu, refetch: fetchMenus };
+  const deleteMenu = async (id: string) => {
+    await api.delete(`/daily-menus/${id}`);
+    setMenus((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  return { menus, loading, createMenu, publishMenu, deactivateMenu, activateMenu, deleteMenu, refetch: fetchMenus };
 }

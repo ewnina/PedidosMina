@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Req } from '@nestjs/common';
 import { DailyMenusService } from './daily-menus.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { TenantIsolationGuard } from '../../auth/guards/tenant-isolation.guard';
@@ -32,5 +32,10 @@ export class DailyMenusController {
   @Patch(':id/activate')
   activate(@Param('id') id: string) {
     return this.menusService.activate(id);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.menusService.remove(id);
   }
 }

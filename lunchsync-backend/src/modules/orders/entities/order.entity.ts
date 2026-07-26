@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Provider } from '../../providers/entities/provider.entity';
 import { User } from '../../users/entities/user.entity';
 import { DailyMenu } from '../../menus/daily-menus/entities/daily-menu.entity';
 import { DeliveryZone } from '../../delivery-zones/entities/delivery-zone.entity';
+import { OrderItem } from '../items/entities/order-item.entity';
 
 @Entity('orders')
 export class Order {
@@ -29,7 +30,7 @@ export class Order {
   @Column({ type: 'uuid', name: 'daily_menu_id' })
   dailyMenuId!: string;
 
-  @ManyToOne(() => DailyMenu)
+  @ManyToOne(() => DailyMenu, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'daily_menu_id' })
   dailyMenu!: DailyMenu;
 
@@ -72,4 +73,7 @@ export class Order {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
+
+  @OneToMany(() => OrderItem, (item) => item.order)
+  items?: OrderItem[];
 }
