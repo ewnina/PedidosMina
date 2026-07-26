@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useOrders, type Order } from '../../../hooks/provider/useOrders';
+import { useAuth } from '../../../contexts/AuthContext';
 import { api } from '../../../lib/api';
 import { IosCard } from '../../../components/ui/IosCard';
 import { IosButton } from '../../../components/ui/IosButton';
@@ -37,7 +38,8 @@ interface Payment {
 }
 
 export function OrdersPage(): React.JSX.Element {
-  const { orders, loading, updateOrderStatus, refetch } = useOrders();
+  const { user } = useAuth();
+  const { orders, loading, updateOrderStatus, refetch } = useOrders(user?.providerId);
   const [filter, setFilter] = useState('all');
   const [payModalOrder, setPayModalOrder] = useState<Order | null>(null);
   const [pendingPayments, setPendingPayments] = useState<Payment[]>([]);

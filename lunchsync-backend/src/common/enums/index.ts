@@ -9,7 +9,6 @@ export enum OrderStatus {
 export enum PaymentStatus {
   Unpaid = 'unpaid',
   Paid = 'paid',
-  PayrollDeduction = 'payroll_deduction',
 }
 
 export enum BotStatus {

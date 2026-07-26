@@ -13,6 +13,16 @@ export class OrderWebSocketListener {
   handleOrderCreated(event: OrderCreatedEvent): void {
     this.logger.log(`WebSocket notification for order ${event.orderData.orderNumber}`);
 
+    this.realtimeGateway.emitOrderNew(event.providerId, {
+      orderId: event.orderId,
+      orderNumber: event.orderData.orderNumber,
+      employeeName: event.orderData.employeeName,
+      totalAmount: event.orderData.totalAmount,
+      orderStatus: 'pending',
+      paymentStatus: 'unpaid',
+      createdAt: new Date().toISOString(),
+    });
+
     this.realtimeGateway.emitComboOptionUpdate(event.dailyMenuId, {
       optionId: '',
       isAvailable: true,

@@ -13,6 +13,16 @@ export interface ComboOptionUpdatedPayload {
   stockQuantity: number | null;
 }
 
+export interface OrderNewPayload {
+  orderId: string;
+  orderNumber: string;
+  employeeName: string;
+  totalAmount: number;
+  orderStatus: string;
+  paymentStatus: string;
+  createdAt: string;
+}
+
 @WebSocketGateway({ cors: { origin: true }, namespace: '/realtime' })
 export class MenuRealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -26,6 +36,12 @@ export class MenuRealtimeGateway implements OnGatewayConnection, OnGatewayDiscon
       client.join(`menu-realtime-${dailyMenuId}`);
       this.logger.log(`Client ${client.id} joined menu-realtime-${dailyMenuId}`);
     }
+
+    const providerId = client.handshake.query['providerId'];
+    if (typeof providerId === 'string') {
+      client.join(`orders-${providerId}`);
+      this.logger.log(`Client ${client.id} joined orders-${providerId}`);
+    }
   }
 
   handleDisconnect(client: Socket): void {
@@ -34,5 +50,9 @@ export class MenuRealtimeGateway implements OnGatewayConnection, OnGatewayDiscon
 
   emitComboOptionUpdate(dailyMenuId: string, payload: ComboOptionUpdatedPayload): void {
     this.server.to(`menu-realtime-${dailyMenuId}`).emit('combo-option-updated', payload);
+  }
+
+  emitOrderNew(providerId: string, payload: OrderNewPayload): void {
+    this.server.to(`orders-${providerId}`).emit('order-new', payload);
   }
 }

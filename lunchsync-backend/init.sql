@@ -275,7 +275,7 @@ BEGIN
     ) VALUES (
         p_order_number, p_user_id, p_provider_id, p_daily_menu_id, p_delivery_zone_id,
         p_employee_name, p_employee_phone, p_provider_name, p_delivery_zone_name,
-        p_total_amount, 'pending', 'payroll_deduction', p_special_instructions
+        p_total_amount, 'pending', 'unpaid', p_special_instructions
     ) RETURNING id INTO v_order_id;
 
     -- 3. Crear el detalle del servicio

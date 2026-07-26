@@ -18,6 +18,13 @@ export function connectMenuSocket(dailyMenuId: string): Socket {
   return socket;
 }
 
+export function connectOrderSocket(providerId: string): Socket {
+  const socket = io(`${WS_URL}/realtime`, {
+    query: { providerId },
+  });
+  return socket;
+}
+
 export function connectWhatsappSocket(providerId: string): Socket {
   const socket = io(`${WS_URL}/whatsapp`, {
     query: { providerId },
