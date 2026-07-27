@@ -1,11 +1,10 @@
 import { Controller, Post, Patch, Body, Headers, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { ConfigService } from '@nestjs/config';
 import os from 'os';
 import { UsersService } from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
-
-const BOT_SECRET = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
 
 function getLocalIp(): string {
   const interfaces = os.networkInterfaces();
@@ -23,11 +22,16 @@ const LOCAL_IP = getLocalIp();
 
 @Controller('bot')
 export class BotController {
+  private readonly botSecret: string;
+
   constructor(
     private readonly users: UsersService,
     private readonly auth: AuthService,
     private readonly whatsapp: WhatsappService,
-  ) {}
+    private readonly config: ConfigService,
+  ) {
+    this.botSecret = this.config.get<string>('BOT_INTERNAL_SECRET') ?? 'lunchsync-bot-internal';
+  }
 
   @Post('magic-link')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
@@ -35,7 +39,7 @@ export class BotController {
     @Body() body: { author: string; whatsappGroupId: string; providerId: string },
     @Headers('x-bot-secret') secret: string,
   ) {
-    if (secret !== BOT_SECRET) {
+    if (secret !== this.botSecret) {
       throw new UnauthorizedException('Invalid bot secret');
     }
 
@@ -66,7 +70,7 @@ export class BotController {
     @Body() body: { providerId: string; whatsappGroupId: string },
     @Headers('x-bot-secret') secret: string,
   ) {
-    if (secret !== BOT_SECRET) {
+    if (secret !== this.botSecret) {
       throw new UnauthorizedException('Invalid bot secret');
     }
 
