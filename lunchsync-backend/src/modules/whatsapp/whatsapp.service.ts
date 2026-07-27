@@ -29,6 +29,15 @@ export class WhatsappService {
     return this.sender.getQr(providerId);
   }
 
+  async getChats(providerId: string) {
+    return this.sender.getChats(providerId);
+  }
+
+  async getGroup(providerId: string) {
+    const bot = await this.providerBotRepo.findOne({ where: { providerId } });
+    return { providerId, whatsappGroupId: bot?.whatsappGroupId ?? null };
+  }
+
   async startBot(providerId: string) {
     const result = await this.sender.start(providerId);
     this.gateway.emitStatusChanged(providerId, result.status);

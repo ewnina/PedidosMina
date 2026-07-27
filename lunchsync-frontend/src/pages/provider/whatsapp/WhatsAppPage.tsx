@@ -12,6 +12,12 @@ interface BotStatus {
   lastConnectedAt: string | null;
 }
 
+interface ChatInfo {
+  id: string;
+  name: string | null;
+  isGroup: boolean;
+}
+
 const statusConfig: Record<string, { label: string; color: string }> = {
   disconnected: { label: 'Desconectado', color: 'text-[var(--c-text-secondary)]' },
   starting: { label: 'Iniciando...', color: 'text-[#FF9500]' },
@@ -29,6 +35,9 @@ export function WhatsAppPage(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [groups, setGroups] = useState<ChatInfo[]>([]);
+  const [linkedGroupId, setLinkedGroupId] = useState<string | null>(null);
+  const [loadingGroups, setLoadingGroups] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -94,6 +103,35 @@ export function WhatsAppPage(): React.JSX.Element {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
+  }, [botStatus?.status, user?.providerId]);
+
+  const fetchGroups = async () => {
+    if (!user?.providerId) return;
+    setLoadingGroups(true);
+    try {
+      const [chatsRes, groupRes] = await Promise.all([
+        api.get<{ providerId: string; chats: ChatInfo[] }>(`/providers/${user.providerId}/whatsapp/chats`),
+        api.get<{ providerId: string; whatsappGroupId: string | null }>(`/providers/${user.providerId}/whatsapp/group`),
+      ]);
+      setGroups(chatsRes.data.chats.filter(c => c.isGroup));
+      setLinkedGroupId(groupRes.data.whatsappGroupId);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingGroups(false);
+    }
+  };
+
+  const linkGroup = async (groupId: string) => {
+    if (!user?.providerId) return;
+    await api.patch(`/providers/${user.providerId}/whatsapp/group`, { whatsappGroupId: groupId });
+    setLinkedGroupId(groupId);
+  };
+
+  useEffect(() => {
+    if (botStatus?.status === 'connected') {
+      void fetchGroups();
+    }
   }, [botStatus?.status, user?.providerId]);
 
   const runAction = async (name: string, fn: () => Promise<void>) => {
@@ -204,6 +242,56 @@ export function WhatsAppPage(): React.JSX.Element {
               </IosButton>
             </div>
           </IosCard>
+
+          {botStatus?.status === 'connected' && (
+            <IosCard>
+              <h3 className="text-[17px] font-semibold mb-1">Grupo de WhatsApp</h3>
+              <p className="text-[12px] text-[var(--c-text-secondary)] mb-3">
+                {linkedGroupId
+                  ? <>Vinculado: <span className="text-[var(--c-text)] font-medium">{linkedGroupId.split('@')[0]}</span></>
+                  : 'No hay grupo vinculado'}
+              </p>
+              {loadingGroups ? (
+                <p className="text-[13px] text-[var(--c-text-secondary)] py-2">Cargando grupos...</p>
+              ) : groups.length === 0 ? (
+                <div className="space-y-2">
+                  <p className="text-[13px] text-[var(--c-text-secondary)]">No se encontraron grupos</p>
+                  <IosButton variant="secondary" className="w-full" onClick={() => void fetchGroups()}>
+                    🔄 Reintentar
+                  </IosButton>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {groups.map((g) => (
+                    <div
+                      key={g.id}
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                        linkedGroupId === g.id
+                          ? 'border-[#34C759] bg-[#34C759]/5'
+                          : 'border-[var(--c-border)] bg-[var(--c-bg-secondary)]'
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[14px] font-medium truncate">{g.name ?? 'Sin nombre'}</p>
+                        <p className="text-[11px] text-[var(--c-text-secondary)]">{g.id.split('@')[0]}</p>
+                      </div>
+                      {linkedGroupId === g.id ? (
+                        <span className="text-[12px] text-[#34C759] font-medium ml-3 whitespace-nowrap">Vinculado</span>
+                      ) : (
+                        <IosButton
+                          className="ml-3 whitespace-nowrap"
+                          onClick={() => void linkGroup(g.id)}
+                          disabled={actionLoading !== null}
+                        >
+                          Vincular
+                        </IosButton>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </IosCard>
+          )}
         </div>
       )}
     </div>

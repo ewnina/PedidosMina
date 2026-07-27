@@ -118,6 +118,20 @@ export class HttpWhatsappSender implements IWhatsappSender {
     }
   }
 
+  async getChats(providerId: string): Promise<{ providerId: string; chats: { id: string; name: string | null; isGroup: boolean }[] }> {
+    try {
+      const response = await axios.get<{ providerId: string; chats: { id: string; name: string | null; isGroup: boolean }[] }>(
+        `${this.botUrl}/api/chats/${providerId}`,
+        { headers: this.secretHeader(), timeout: TIMEOUT_MS },
+      );
+      return response.data;
+    } catch (error) {
+      const detail = this.extractError(error);
+      this.logger.warn(`Failed to get chats for ${providerId}: ${detail}`);
+      return { providerId, chats: [] };
+    }
+  }
+
   private secretHeader(): Record<string, string> {
     return { 'x-bot-secret': this.config.get<string>('BOT_INTERNAL_SECRET') ?? 'lunchsync-bot-internal' };
   }

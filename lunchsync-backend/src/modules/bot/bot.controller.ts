@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Patch, Body, Headers, UnauthorizedException } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import os from 'os';
 import { UsersService } from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 
 const BOT_SECRET = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
 
@@ -25,6 +26,7 @@ export class BotController {
   constructor(
     private readonly users: UsersService,
     private readonly auth: AuthService,
+    private readonly whatsapp: WhatsappService,
   ) {}
 
   @Post('magic-link')
@@ -56,5 +58,19 @@ export class BotController {
     const link = `${baseUrl}/employee/auth?token=${token}&jti=${jti}`;
 
     return { link, userId, whatsappLid: body.author, userExists };
+  }
+
+  @Patch('link-group')
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  async linkGroup(
+    @Body() body: { providerId: string; whatsappGroupId: string },
+    @Headers('x-bot-secret') secret: string,
+  ) {
+    if (secret !== BOT_SECRET) {
+      throw new UnauthorizedException('Invalid bot secret');
+    }
+
+    await this.whatsapp.updateGroup(body.providerId, body.whatsappGroupId);
+    return { success: true };
   }
 }

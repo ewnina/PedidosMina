@@ -38,6 +38,16 @@ export class WhatsappController {
     return this.whatsappService.getQr(providerId);
   }
 
+  @Get('chats')
+  getChats(@Param('providerId') providerId: string) {
+    return this.whatsappService.getChats(providerId);
+  }
+
+  @Get('group')
+  getGroup(@Param('providerId') providerId: string) {
+    return this.whatsappService.getGroup(providerId);
+  }
+
   @Patch('group')
   updateGroup(@Param('providerId') providerId: string, @Body() body: { whatsappGroupId: string }) {
     return this.whatsappService.updateGroup(providerId, body.whatsappGroupId);

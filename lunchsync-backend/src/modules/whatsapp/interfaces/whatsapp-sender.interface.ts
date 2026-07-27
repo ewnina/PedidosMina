@@ -6,4 +6,5 @@ export abstract class IWhatsappSender {
   abstract restart(providerId: string): Promise<{ providerId: string; status: string }>;
   abstract unlink(providerId: string): Promise<{ providerId: string; status: string }>;
   abstract getQr(providerId: string): Promise<{ providerId: string; qrCode: string | null }>;
+  abstract getChats(providerId: string): Promise<{ providerId: string; chats: { id: string; name: string | null; isGroup: boolean }[] }>;
 }

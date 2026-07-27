@@ -224,6 +224,11 @@ export async function startBot(providerId: string): Promise<BotStatus> {
     });
 
     client.on('message', async (msg) => {
+
+      const backendUrl = process.env['BACKEND_URL'] ?? 'http://localhost:3000';
+      const botSecret = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
+
+
       //
       try {
         const isGroup = msg.from.endsWith('@g.us');
@@ -234,6 +239,35 @@ export async function startBot(providerId: string): Promise<BotStatus> {
 
         const body = msg.body.trim().toLowerCase();
         const validCommands = ['pedir', 'almuerzo', 'menu', 'ordenar'];
+
+        if (body === 'keygroupid') {
+          await msg.reply(`El ID de este grupo es: ${msg.from}`);
+
+          const url = `${backendUrl}/bot/link-group`;
+          console.log(url);
+
+          try {
+            const { data } = await axios.patch<{ success: boolean }>(
+              url,
+              { providerId, whatsappGroupId: msg.from },
+              { headers: { 'x-bot-secret': botSecret }, timeout: 10_000 },
+            );
+
+            if (data.success) {
+              await msg.reply('✅ Este grupo ha sido vinculado correctamente.');
+            } else {
+              await msg.reply('❌ Error al vincular el grupo.');
+            }
+          } catch (err) {
+            const detail = axios.isAxiosError(err)
+              ? `HTTP ${err.response?.status ?? 'N/A'}: ${JSON.stringify(err.response?.data ?? err.message)}`
+              : err instanceof Error ? err.message : String(err);
+            console.error(`[WhatsApp] Error linking group: ${detail}`);
+            await msg.reply('❌ Error al vincular el grupo.');
+          }
+
+          return;
+        }
 
         if (!validCommands.includes(body)) {
           return;
@@ -247,8 +281,7 @@ export async function startBot(providerId: string): Promise<BotStatus> {
           return;
         }
 
-        const backendUrl = process.env['BACKEND_URL'] ?? 'http://localhost:3000';
-        const botSecret = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
+      
 
         console.log(`[WhatsApp] Command received: ${body} from author: ${id_user} in group: ${id_grupo}`);
 
