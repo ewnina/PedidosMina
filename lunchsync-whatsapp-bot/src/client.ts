@@ -233,7 +233,7 @@ export async function startBot(providerId: string): Promise<BotStatus> {
         }
 
         const body = msg.body.trim().toLowerCase();
-        const validCommands = ['!pedir', '!almuerzo', 'menu', '!ordenar'];
+        const validCommands = ['pedir', 'almuerzo', 'menu', 'ordenar'];
 
         if (!validCommands.includes(body)) {
           return;
@@ -357,3 +357,67 @@ export async function sendMessage(
     return false;
   }
 }
+
+export async function sendMessageV2(
+  providerId: string,
+  recipient: string,
+  message: string,
+): Promise<boolean> {
+  const instance = instances.get(providerId);
+  if (!instance || instance.status !== 'connected') {
+    console.error(`[WhatsApp] Cannot send message - bot not connected: ${providerId}`);
+    return false;
+  }
+
+  try {
+    const client = instance.client;
+
+    // 1. CALCULAR TIEMPO INTELIGENTE (Segundos basados en la longitud del texto)
+    // 250 caracteres por minuto = ~4.1 caracteres por segundo.
+    // Ponemos un mínimo de 1.5 segundos y un máximo de 6 segundos para no saturar al usuario.
+    const caracteresPorSegundo = 4.1;
+    const tiempoEscrituraMs = Math.min(
+      Math.max((message.length / caracteresPorSegundo) * 1000, 1500), 
+      6000
+    );
+
+    // 2. ACTIVAR "ESCRIBIENDO..." DE FORMA SEGURA
+    try {
+      if (client.pupPage) {
+        await client.sendPresenceAvailable();
+        await client.pupPage.evaluate(async (chatId) => {
+          if (window.Store?.Chat) {
+            const chat = await window.Store.Chat.find(chatId);
+            if (chat && typeof chat.sendStateTyping === 'function') {
+              await chat.sendStateTyping();
+            }
+          }
+        }, recipient);
+
+        // 3. ESPERAR EL TIEMPO CALCULADO
+        await new Promise((resolve) => setTimeout(resolve, tiempoEscrituraMs));
+      }
+    } catch (presenceError) {
+      // Si falla la simulación visual por cambios de WhatsApp, el flujo no se detiene
+      console.warn(`[WhatsApp] No se pudo simular escritura para ${recipient}, enviando directo.`);
+    }
+
+    // 4. ENVIAR EL MENSAJE
+    await client.sendMessage(recipient, message);
+
+    // 5. DESACTIVAR PRESENCIA
+    try {
+      if (client.pupPage) {
+        await client.sendPresenceUnavailable();
+      }
+    } catch { /* ignore */ }
+
+    console.log(`[WhatsApp] Message sent: ${providerId} -> ${recipient} (Simulado: ${(tiempoEscrituraMs / 1000).toFixed(1)}s)`);
+    return true;
+  } catch (error) {
+    const details = error instanceof Error ? error.stack ?? error.message : String(error);
+    console.error(`[WhatsApp] Failed to send message: ${providerId} ${recipient}`, details);
+    return false;
+  }
+}
+
