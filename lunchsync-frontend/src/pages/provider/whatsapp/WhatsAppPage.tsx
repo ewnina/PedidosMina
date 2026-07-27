@@ -27,6 +27,8 @@ export function WhatsAppPage(): React.JSX.Element {
   const [botStatus, setBotStatus] = useState<BotStatus | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -94,9 +96,22 @@ export function WhatsAppPage(): React.JSX.Element {
     };
   }, [botStatus?.status, user?.providerId]);
 
+  const runAction = async (name: string, fn: () => Promise<void>) => {
+    setError(null);
+    setActionLoading(name);
+    try {
+      await fn();
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Error al comunicar con el bot';
+      setError(msg);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const startBot = async () => {
     if (!user?.providerId) return;
-    await api.post(`/providers/${user.providerId}/whatsapp/start`);
+    await api.post(`/providers/${user.providerId}/whatsapp/start`, {}, { timeout: 45000 });
   };
 
   const stopBot = async () => {
@@ -106,7 +121,7 @@ export function WhatsAppPage(): React.JSX.Element {
 
   const restartBot = async () => {
     if (!user?.providerId) return;
-    await api.post(`/providers/${user.providerId}/whatsapp/restart`);
+    await api.post(`/providers/${user.providerId}/whatsapp/restart`, {}, { timeout: 45000 });
   };
 
   const unlinkBot = async () => {
@@ -152,18 +167,40 @@ export function WhatsAppPage(): React.JSX.Element {
 
           <IosCard>
             <h3 className="text-[17px] font-semibold mb-3">Controles</h3>
+            {error && (
+              <p className="text-[13px] text-[#FF3B30] mb-3 bg-[#FF3B30]/10 rounded-lg p-3">{error}</p>
+            )}
             <div className="space-y-2">
-              <IosButton className="w-full" onClick={() => void startBot()}>
-                ▶️ Iniciar Bot
+              <IosButton
+                className="w-full"
+                onClick={() => void runAction('start', startBot)}
+                disabled={actionLoading !== null}
+              >
+                {actionLoading === 'start' ? '⏳ Iniciando...' : '▶️ Iniciar Bot'}
               </IosButton>
-              <IosButton variant="secondary" className="w-full" onClick={() => void stopBot()}>
-                ⏹️ Detener Bot
+              <IosButton
+                variant="secondary"
+                className="w-full"
+                onClick={() => void runAction('stop', stopBot)}
+                disabled={actionLoading !== null}
+              >
+                {actionLoading === 'stop' ? '⏳ Deteniendo...' : '⏹️ Detener Bot'}
               </IosButton>
-              <IosButton variant="secondary" className="w-full" onClick={() => void restartBot()}>
-                🔄 Reiniciar Bot
+              <IosButton
+                variant="secondary"
+                className="w-full"
+                onClick={() => void runAction('restart', restartBot)}
+                disabled={actionLoading !== null}
+              >
+                {actionLoading === 'restart' ? '⏳ Reiniciando...' : '🔄 Reiniciar Bot'}
               </IosButton>
-              <IosButton variant="destructive" className="w-full" onClick={() => void unlinkBot()}>
-                🔗 Desvincular WhatsApp
+              <IosButton
+                variant="destructive"
+                className="w-full"
+                onClick={() => void runAction('unlink', unlinkBot)}
+                disabled={actionLoading !== null}
+              >
+                {actionLoading === 'unlink' ? '⏳ Desvinculando...' : '🔗 Desvincular WhatsApp'}
               </IosButton>
             </div>
           </IosCard>
