@@ -113,7 +113,7 @@ export function EmployeeOrdersPage(): React.JSX.Element {
       <div className="space-y-3 mt-4">
         {orders.map((order) => {
           const status = (statusConfig[order.orderStatus] ?? statusConfig.pending) as { label: string; color: string; bg: string };
-          const payStatus = paymentConfig[order.paymentStatus] ?? paymentConfig.unpaid;
+          const payStatus = paymentConfig[order.paymentStatus] ?? paymentConfig.unpaid!;
           const existingPayment = getPaymentForOrder(order.id);
           const payUploadStatus = existingPayment ? paymentStatusConfig[existingPayment.status] : null;
 
