@@ -229,7 +229,7 @@ export async function startBot(providerId: string): Promise<BotStatus> {
       const botSecret = process.env['BOT_INTERNAL_SECRET'] ?? 'lunchsync-bot-internal';
 
 
-      //
+      //Validando que se un grupo
       try {
         const isGroup = msg.from.endsWith('@g.us');
 
