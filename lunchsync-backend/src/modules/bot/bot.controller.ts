@@ -57,7 +57,7 @@ export class BotController {
       providerId: body.providerId,
     });
 
-    const frontendPort = process.env['FRONTEND_PORT'] ?? '5173';
+    const frontendPort = process.env['FRONTEND_PORT'] ?? '';
     const baseUrl = process.env['FRONTEND_URL'] ?? `http://${LOCAL_IP}:${frontendPort}`;
     const link = `${baseUrl}/employee/auth?token=${token}&jti=${jti}`;
 
